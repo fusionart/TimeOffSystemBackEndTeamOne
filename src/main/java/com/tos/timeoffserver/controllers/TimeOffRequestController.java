@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,7 +23,10 @@ import org.springframework.validation.BindingResult;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
+import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.services.TimeOffRequestService;
+import com.tos.timeoffserver.services.UserService;
+import com.tos.timeoffserver.domain.entites.User;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
@@ -30,8 +34,12 @@ import com.tos.timeoffserver.services.TimeOffRequestService;
 public class TimeOffRequestController {
 	@Autowired
 	private TimeOffRequestRepository requestRepository;
-	
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
 	private TimeOffRequestService requestSerice;
+	@Autowired
+	private UserService userSerice;
 
 	@GetMapping(path = "/new_request")
 	public @ResponseBody String addNewUser(@RequestParam String type, @RequestParam String startDate, @RequestParam String finishDate,
@@ -50,9 +58,23 @@ public class TimeOffRequestController {
 		return "Added";
 	}
 
-	@GetMapping(path = "/list")
+	@GetMapping(value = "/list")
 	public @ResponseBody Iterable<TimeOffRequest> getAllRequest() {
 		return requestRepository.findAll();
+	}
+	
+	@RequestMapping(value = "/approve/", method = RequestMethod.POST)
+	public ResponseEntity<String> approveRequest(@RequestBody Long requestId, Long userId) {
+		TimeOffRequest request = requestRepository.findOne(requestId);
+		User currentUser = userRepository.findOne(userId);
+		if (!userSerice.isUserAdmin(currentUser)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		if (request == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		requestSerice.approveStatus(request);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
 	@DeleteMapping("/delete/{id}")
