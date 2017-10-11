@@ -2,6 +2,7 @@ package com.tos.timeoffserver.controllers;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +42,10 @@ public class TimeOffRequestController {
 	@Autowired
 	private UserService userSerice;
 
+	
 	@GetMapping(path = "/new_request")
-	public @ResponseBody String addNewUser(@RequestParam String type, @RequestParam String startDate, @RequestParam String finishDate,
-			@RequestParam String reason, @RequestParam String note) {
+	public @ResponseBody String addNewUser(@RequestParam String type, @RequestParam String startDate,
+			@RequestParam String finishDate, @RequestParam String reason, @RequestParam String note) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
 		TimeOffRequest newRequest = new TimeOffRequest();
 		newRequest.setDateOfSubmit(sqlCurrentDate);
@@ -62,21 +64,21 @@ public class TimeOffRequestController {
 	public @ResponseBody Iterable<TimeOffRequest> getAllRequest() {
 		return requestRepository.findAll();
 	}
-	
-	@RequestMapping(value = "/approve/", method = RequestMethod.POST)
-	public ResponseEntity<String> approveRequest(@RequestBody Long requestId, Long userId) {
-		TimeOffRequest request = requestRepository.findOne(requestId);
-		User currentUser = userRepository.findOne(userId);
+
+	@RequestMapping(value = "/approve", method = RequestMethod.POST)
+	public ResponseEntity<String> approveRequest(@RequestBody ChangeRequestStatusPost changeStatusPost) {
+		TimeOffRequest request = requestRepository.findOne(changeStatusPost.getRequestId());
+		User currentUser = userRepository.findOne(changeStatusPost.getUserId());
 		if (!userSerice.isUserAdmin(currentUser)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 		if (request == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		requestSerice.approveStatus(request);
+		requestSerice.approveRequest(request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
-
+	
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<TimeOffRequest> deleteTimeOffRequestById(@PathVariable(value = "id") Long id) {
 		TimeOffRequest request = requestRepository.findOne(id);
@@ -85,6 +87,20 @@ public class TimeOffRequestController {
 		}
 		requestRepository.delete(request);
 		return ResponseEntity.ok().build();
+	}
+
+
+	static class ChangeRequestStatusPost {
+		Long userId;
+		Long requestId;
+
+		public Long getUserId() {
+			return userId;
+		}
+
+		public Long getRequestId() {
+			return requestId;
+		}
 	}
 
 }

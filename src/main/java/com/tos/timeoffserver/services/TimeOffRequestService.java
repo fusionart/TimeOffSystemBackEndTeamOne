@@ -16,10 +16,9 @@ public class TimeOffRequestService {
 	@Autowired
 	private TimeOffRequestRepository requestRepository;
 
-	public void approveStatus(TimeOffRequest request) {
-		int index = requestRepository.findAll().indexOf(request);
+	public void approveRequest(TimeOffRequest request) {
 		request.setStatus("approved");
-		requestRepository.findAll().set(index, request);
+		requestRepository.save(request);
 	}
 
 	public Date getStartDate(String startDate) {
