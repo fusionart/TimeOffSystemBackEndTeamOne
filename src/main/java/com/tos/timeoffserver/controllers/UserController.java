@@ -11,7 +11,7 @@ import com.tos.timeoffserver.domain.entites.User;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/api")
 public class UserController {
 	@Autowired
 	UserRepository userRepo;
