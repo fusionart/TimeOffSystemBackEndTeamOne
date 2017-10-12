@@ -1,11 +1,13 @@
 package com.tos.timeoffserver.domain.entites;
 
 import java.sql.Date;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -27,6 +29,13 @@ public class TimeOffRequest {
 	private String status;
 	private String reason;
 	private String note;
+	
+	@ManyToMany(mappedBy = "requests")    
+	private Set<User> users;  
+	    
+	public Set<User> getStudents() {
+	    return users;
+	}
 	
 	public Date getDateFinish() {
 		return dateFinish;
