@@ -1,12 +1,16 @@
 package com.tos.timeoffserver.domain.entites;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
@@ -29,67 +33,90 @@ public class TimeOffRequest {
 	private String status;
 	private String reason;
 	private String note;
+
+	@ManyToMany(mappedBy = "requests")
+	private Set<User> users= new HashSet<User>(0);
 	
-	@ManyToMany(mappedBy = "requests")    
-	private Set<User> users;  
-	    
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "document_map", joinColumns = {
+			@JoinColumn(name = "request_id", referencedColumnName = "id") }, inverseJoinColumns = {
+					@JoinColumn(name = "document_id", referencedColumnName = "document_id") })
+	private Set<Document> documents = new HashSet<Document>(0);
+
 	public Set<User> getStudents() {
-	    return users;
+		return users;
 	}
-	
+
 	public Date getDateFinish() {
 		return dateFinish;
 	}
+
 	public Date getDateOfSubmit() {
 		return dateOfSubmit;
 	}
+
 	public Date getDateStart() {
 		return dateStart;
 	}
+
 	public int getDays() {
 		return days;
 	}
+
 	public Long getId() {
 		return id;
 	}
+
 	public String getNote() {
 		return note;
 	}
+
 	public String getReason() {
 		return reason;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public String getType() {
 		return type;
 	}
+
 	public void setDateFinish(Date dateFinish) {
 		this.dateFinish = dateFinish;
 	}
+
 	public void setDateOfSubmit(Date dateOfSubmit) {
 		this.dateOfSubmit = dateOfSubmit;
 	}
+
 	public void setDateStart(Date dateStart) {
 		this.dateStart = dateStart;
 	}
+
 	public void setDays(int days) {
 		this.days = days;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public void setNote(String note) {
 		this.note = note;
 	}
+
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 }

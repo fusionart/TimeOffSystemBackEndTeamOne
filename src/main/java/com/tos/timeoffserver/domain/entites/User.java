@@ -37,40 +37,15 @@ public class User {
 	private Boolean isAdmin;
 	private int PtoAvailable;
 	private int PtoTotal;
-//	private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
 
-	
-	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "request_map", joinColumns = {
 			@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
 					@JoinColumn(name = "request_id", referencedColumnName = "id") })
-	private Set<TimeOffRequest> requests;
-	
+	private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
+
 	public User() {
 	}
-
-
-
-
-
-//	@ManyToMany(cascade = CascadeType.ALL)
-//	@JoinTable(name = "request_map", joinColumns = {
-//			@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
-//					@JoinColumn(name = "request_id", referencedColumnName = "id") })
-//	public Set<TimeOffRequest> getRequests() {
-//		return requests;
-//	}
-	
-//	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//	  @JoinTable(name = "request_map", joinColumns = {
-//	      @JoinColumn(name = "id", nullable = false) }, inverseJoinColumns = {
-//	      @JoinColumn(name = "id", nullable = false) })
-//	  public List<TimeOffRequest> requests;
-//
-//	public void setRequests(List<TimeOffRequest> requests) {
-//		this.requests = requests;
-//	}
 
 	public String getAddress() {
 		return address;
