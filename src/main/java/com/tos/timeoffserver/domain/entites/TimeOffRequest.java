@@ -35,8 +35,8 @@ public class TimeOffRequest {
 	private String note;
 
 	@ManyToMany(mappedBy = "requests")
-	private Set<User> users= new HashSet<User>(0);
-	
+	private Set<User> users = new HashSet<User>(0);
+
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "document_map", joinColumns = {
 			@JoinColumn(name = "request_id", referencedColumnName = "id") }, inverseJoinColumns = {

@@ -1,6 +1,5 @@
 package com.tos.timeoffserver.domain.entites;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +19,7 @@ public class Document {
 
 	@ManyToMany(mappedBy = "documents")
 	private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
-	
+
 	public Document() {
 	}
 
