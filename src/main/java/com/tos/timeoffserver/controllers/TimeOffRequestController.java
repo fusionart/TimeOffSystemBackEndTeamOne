@@ -5,10 +5,13 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.validation.Valid;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,19 +45,39 @@ public class TimeOffRequestController {
 	@Autowired
 	private UserService userSerice;
 
-	
-	@GetMapping(path = "/new_request")
-	public @ResponseBody String addNewUser(@RequestParam String type, @RequestParam String startDate,
-			@RequestParam String finishDate, @RequestParam String reason, @RequestParam String note) {
+	// TimeOffRequest newRequest = new TimeOffRequest();
+
+	// @PostMapping(path = "/new_request")
+	// public @ResponseBody String addNewRequest(@RequestParam String typeOff,
+	// @RequestParam String startDate,
+	// @RequestParam String finishDate, @RequestParam String reason, @RequestParam
+	// String note) {
+	// java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
+	// TimeOffRequest newRequest = new TimeOffRequest();
+	// newRequest.setDateOfSubmit(sqlCurrentDate);
+	// newRequest.setDateStart(requestSerice.getStartDate(startDate));
+	// newRequest.setDateFinish(requestSerice.getFinishDate(finishDate));
+	// newRequest.setDays(requestSerice.getTimeOffDays(startDate, finishDate));
+	// newRequest.setType(typeOff);
+	// newRequest.setReason(reason);
+	// newRequest.setNote(note);
+	// newRequest.setStatus("unapproved");
+	// requestRepository.save(newRequest);
+	// return "Added";
+	// }
+
+	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
+	public @ResponseBody String addNewRequest(@RequestBody TimeOffRequest timeOffRequest) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
+
 		TimeOffRequest newRequest = new TimeOffRequest();
 		newRequest.setDateOfSubmit(sqlCurrentDate);
-		newRequest.setDateStart(requestSerice.getStartDate(startDate));
-		newRequest.setDateFinish(requestSerice.getFinishDate(finishDate));
-		newRequest.setDays(requestSerice.getTimeOffDays(startDate, finishDate));
-		newRequest.setType(type);
-		newRequest.setReason(reason);
-		newRequest.setNote(note);
+		//newRequest.setDateStart(timeOffRequest.getDateStart());
+		//newRequest.setDateFinish(timeOffRequest.getDateFinish());
+		newRequest.setDays(timeOffRequest.getDays());
+		newRequest.setType(timeOffRequest.getType());
+		newRequest.setReason(timeOffRequest.getReason());
+		newRequest.setNote(timeOffRequest.getNote());
 		newRequest.setStatus("unapproved");
 		requestRepository.save(newRequest);
 		return "Added";
@@ -78,7 +101,7 @@ public class TimeOffRequestController {
 		requestSerice.approveRequest(request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
-	
+
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<TimeOffRequest> deleteTimeOffRequestById(@PathVariable(value = "id") Long id) {
 		TimeOffRequest request = requestRepository.findOne(id);
@@ -88,7 +111,6 @@ public class TimeOffRequestController {
 		requestRepository.delete(request);
 		return ResponseEntity.ok().build();
 	}
-
 
 	static class ChangeRequestStatusPost {
 		Long userId;
