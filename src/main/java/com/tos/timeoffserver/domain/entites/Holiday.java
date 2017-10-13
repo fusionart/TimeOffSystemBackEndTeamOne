@@ -1,8 +1,7 @@
 package com.tos.timeoffserver.domain.entites;
 
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,5 +41,10 @@ public class Holiday {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-
+    @Override
+    public String toString() {
+        return String.format(
+                "Holiday[id=%d, date='%s']",
+                id, date);
+    }
 }
