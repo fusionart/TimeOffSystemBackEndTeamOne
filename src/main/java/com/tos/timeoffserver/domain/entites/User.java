@@ -14,6 +14,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.tos.timeoffserver.domain.entites.Holiday;
+
 @Entity
 @Table(name = "user")
 public class User {
