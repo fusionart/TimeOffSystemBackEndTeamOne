@@ -21,19 +21,19 @@ public class TimeOffRequestService {
 		requestRepository.save(request);
 	}
 
-	public Date getStartDate(String startDate) {
-		// TODO Auto-generated method stub
-
-		// return sql.date!!!
-		return null;
-	}
-
-	public Date getFinishDate(String finishDate) {
-		// TODO Auto-generated method stub
-
-		// return sql.date!!!
-		return null;
-	}
+//	public Date getStartDate(Date date) {
+//		// TODO Auto-generated method stub
+//
+//		// return sql.date!!!
+//		return null;
+//	}
+//
+//	public Date getFinishDate(Date date) {
+//		// TODO Auto-generated method stub
+//
+//		return sql.Date(date);
+//		//return null;
+//	}
 
 	public int getTimeOffDays(String startDate, String finishDate) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
