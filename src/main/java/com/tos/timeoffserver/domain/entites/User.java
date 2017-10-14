@@ -32,7 +32,7 @@ public class User {
 	private String telephone;
 	private String position;
 	@Column(nullable = false, columnDefinition = "TINYINT(1)")
-	private Boolean isAdmin;
+	private boolean isAdmin;
 	private int PtoAvailable;
 	private int PtoTotal;
 
