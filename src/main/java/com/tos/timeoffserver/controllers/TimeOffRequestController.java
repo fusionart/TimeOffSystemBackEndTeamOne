@@ -5,8 +5,6 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.validation.Valid;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,9 +70,11 @@ public class TimeOffRequestController {
 
 		TimeOffRequest newRequest = new TimeOffRequest();
 		newRequest.setDateOfSubmit(sqlCurrentDate);
-		//newRequest.setDateStart(timeOffRequest.getDateStart());
-		//newRequest.setDateFinish(timeOffRequest.getDateFinish());
-		newRequest.setDays(timeOffRequest.getDays());
+		System.out.println(timeOffRequest.getDateStart());
+		System.out.println(timeOffRequest.getDateFinish());
+		newRequest.setDateStart(requestSerice.startDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		newRequest.setDateFinish(requestSerice.finishDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		newRequest.setDays(requestSerice.getTimeOffDays(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
 		newRequest.setType(timeOffRequest.getType());
 		newRequest.setReason(timeOffRequest.getReason());
 		newRequest.setNote(timeOffRequest.getNote());

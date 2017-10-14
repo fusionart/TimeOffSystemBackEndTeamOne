@@ -14,10 +14,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
-import org.json.JSONObject;
 
 @Entity
-public class TimeOffRequest  extends JSONObject{
+public class TimeOffRequest {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -27,9 +26,9 @@ public class TimeOffRequest  extends JSONObject{
 	private String type;
 	@NotNull
 	private int days;
-	//@NotNull
+	@NotNull
 	private Date dateStart;
-	//@NotNull
+	@NotNull
 	private Date dateFinish;
 	@NotNull
 	private String status;
