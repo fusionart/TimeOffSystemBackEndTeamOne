@@ -87,8 +87,6 @@ public class TimeOffRequestService {
 			startDate = finishDate;
 			finishDate = tempDate;
 		}
-		System.out.println(startDate + "orderDates");	
-		System.out.println(finishDate + "orderDates -----------------------------------------------------");	
 		dates[0]=startDate;
 		dates[1]=finishDate;
 		return dates;
