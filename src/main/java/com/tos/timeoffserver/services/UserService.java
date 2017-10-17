@@ -1,16 +1,13 @@
 package com.tos.timeoffserver.services;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.Column;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.entites.User;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 
