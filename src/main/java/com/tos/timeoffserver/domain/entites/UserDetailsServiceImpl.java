@@ -1,4 +1,4 @@
-package com.tos.timeoffserver.services;
+package com.tos.timeoffserver.domain.entites;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,19 +11,19 @@ import com.tos.timeoffserver.domain.repositories.UserRepository;
 import static java.util.Collections.emptyList;
 
 @Service
-public class UserDetailsServiceImplementation implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
 
-    public UserDetailsServiceImplementation(UserRepository applicationUserRepository) {
+    public UserDetailsServiceImpl(UserRepository applicationUserRepository) {
         this.userRepository = applicationUserRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.tos.timeoffserver.domain.entites.User user = userRepository.findByUsername(username);
-        if (user == null) {
+    	ApplicationUser applicationUser = userRepository.findByUsername(username);
+        if (applicationUser == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new User(user.getUsername(), user.getPassword(), emptyList());
+        return new User(applicationUser.getUsername(), applicationUser.getPassword(), emptyList());
     }
 }

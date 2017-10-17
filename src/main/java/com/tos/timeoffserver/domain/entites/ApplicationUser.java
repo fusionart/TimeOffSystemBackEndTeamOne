@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class ApplicationUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -42,8 +42,8 @@ public class User {
 					@JoinColumn(name = "request_id", referencedColumnName = "id") })
 	private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
 
-	public User() {
-	}
+//	public ApplicationUser() {
+//	}
 
 	public String getAddress() {
 		return address;

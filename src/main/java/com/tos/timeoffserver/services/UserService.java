@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tos.timeoffserver.domain.entites.User;
+import com.tos.timeoffserver.domain.entites.ApplicationUser;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 
 @Service
@@ -16,7 +16,7 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public boolean isUserAdmin(User currentUser) {
+	public boolean isUserAdmin(ApplicationUser currentUser) {
 		boolean isAdmin = currentUser.getIsAdmin();
 		return isAdmin;
 
@@ -24,7 +24,7 @@ public class UserService {
 
 	public void addUser(String firstName, String secondName, String lastName, String username, String password, String email,
 			String address, String telephone, String position, boolean isAdmin, int PtoAvailable, int PtoTotal) {
-		User newUser = new User();
+		ApplicationUser newUser = new ApplicationUser();
 		newUser.setFirstName(firstName);
 		newUser.setSecondName(secondName);
 		newUser.setLastName(lastName);
@@ -43,7 +43,7 @@ public class UserService {
 
 	@PostConstruct
 	public void initDb() throws ParseException {
-		ArrayList<User> holydays = (ArrayList<User>) userRepository.findAll();
+		ArrayList<ApplicationUser> holydays = (ArrayList<ApplicationUser>) userRepository.findAll();
 		if (holydays.size() < 2) {
 			addUser("Kiril", "Mihailov", "Kotev", "admin", "123456", "kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14",
 					"088 852 0822", "administrator", true, 8, 24);

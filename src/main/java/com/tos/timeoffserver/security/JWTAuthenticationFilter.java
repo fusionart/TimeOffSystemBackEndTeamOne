@@ -1,6 +1,7 @@
 package com.tos.timeoffserver.security;
 
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,8 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-//import com.tos.timeoffserver.domain.entites.User;
-
+import com.tos.timeoffserver.domain.entites.ApplicationUser;
 import static com.tos.timeoffserver.security.SecurityConstants.EXPIRATION_TIME;
 import static com.tos.timeoffserver.security.SecurityConstants.HEADER_STRING;
 import static com.tos.timeoffserver.security.SecurityConstants.SECRET;
@@ -37,9 +37,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
 			throws AuthenticationException {
+		System.out.println(" --------------JWTAuthenticationFilter----- 1 --------------------------------");
+		System.out.println(" --------------" + req + " --------------------------------");
 		try {
-			User creds = new ObjectMapper().readValue(req.getInputStream(), User.class);
-
+			System.out.println(" -------------- iner try --------------------------------");
+			ApplicationUser creds = new ObjectMapper().readValue(req.getInputStream(), ApplicationUser.class);
 			return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),
 					creds.getPassword(), new ArrayList<>()));
 		} catch (IOException e) {
@@ -50,7 +52,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
-
+		System.out.println(" --------------JWTAuthenticationFilter----- 2 --------------------------------");
 		String token = Jwts.builder().setSubject(((User) auth.getPrincipal()).getUsername())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SignatureAlgorithm.HS512, SECRET.getBytes()).compact();
