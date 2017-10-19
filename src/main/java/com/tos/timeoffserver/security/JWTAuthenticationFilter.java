@@ -35,8 +35,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		this.authenticationManager = authenticationManager;
 	}
 	
-	@CrossOrigin(origins = "http://localhost:4200")
+//	@CrossOrigin(origins = "http://localhost:4200")
 	@Override
+	@CrossOrigin
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
 			throws AuthenticationException {
 		System.out.println(" --------------JWTAuthenticationFilter----- 1 --------------------------------");
@@ -50,8 +51,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			throw new RuntimeException(e);
 		}
 	}
-
 	@Override
+	@CrossOrigin
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
 		System.out.println(" --------------JWTAuthenticationFilter----- 2 --------------------------------");
@@ -60,6 +61,5 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				.signWith(SignatureAlgorithm.HS512, SECRET.getBytes()).compact();
 		response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
 		response.getWriter().write(TOKEN_PREFIX + token);
-		
 	}
 }

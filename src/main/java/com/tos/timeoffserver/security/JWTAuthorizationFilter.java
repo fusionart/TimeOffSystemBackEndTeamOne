@@ -23,8 +23,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
     }
-    @CrossOrigin(origins = "http://localhost:4200")
+//    @CrossOrigin(origins = "http://localhost:4200")
     @Override
+    @CrossOrigin
     protected void doFilterInternal(HttpServletRequest req,
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
@@ -40,7 +41,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(req, res);
     }
-
+    
+    @CrossOrigin
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
     	System.out.println(" -------------- JWTAuthorizationFilter----- 2 --------------------------------");
         String token = request.getHeader(HEADER_STRING);

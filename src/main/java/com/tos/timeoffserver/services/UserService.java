@@ -50,9 +50,9 @@ public class UserService {
 		if (holydays.size() < 2) {
 			addUser("Kiril", "Mihailov", "Kotev", "admin", bCryptPasswordEncoder.encode("123456"), "kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14",
 					"088 852 0822", "administrator", true, 8, 24);
-			addUser("Ivan", "Petkov", "Georgiev", "ivan_gp", "123456", "ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24",
+			addUser("Ivan", "Petkov", "Georgiev", "ivan_gp", bCryptPasswordEncoder.encode("123456"), "ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24",
 					"088 874 0841", "draftsman", false, 14, 20);
-			addUser("Kalina", "Kalinova", "Savova", "kalina_ks", "123456", "kalina_savova@gmail.com", "Vratsa, ul.Morava 18",
+			addUser("Kalina", "Kalinova", "Savova", "kalina_ks", bCryptPasswordEncoder.encode("123456"), "kalina_savova@gmail.com", "Vratsa, ul.Morava 18",
 					"088 874 0841", "secretary", false, 5, 22);
 		}
 	}
