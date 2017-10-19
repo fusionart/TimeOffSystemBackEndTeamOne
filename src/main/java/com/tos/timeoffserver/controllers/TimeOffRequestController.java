@@ -74,7 +74,8 @@ public class TimeOffRequestController {
 		System.out.println(timeOffRequest.getDateFinish());
 		newRequest.setDateStart(requestSerice.startDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
 		newRequest.setDateFinish(requestSerice.finishDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		newRequest.setDays(requestSerice.getTimeOffDays(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		//newRequest.setDays(requestSerice.getTimeOffDays(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		newRequest.setDays(timeOffRequest.getDays());
 		newRequest.setType(timeOffRequest.getType());
 		newRequest.setReason(timeOffRequest.getReason());
 		newRequest.setNote(timeOffRequest.getNote());
@@ -83,7 +84,7 @@ public class TimeOffRequestController {
 		return "Added";
 	}
 
-	@GetMapping(value = "/list")
+	@GetMapping(value = "/request-list")
 	public @ResponseBody Iterable<TimeOffRequest> getAllRequest() {
 		return requestRepository.findAll();
 	}

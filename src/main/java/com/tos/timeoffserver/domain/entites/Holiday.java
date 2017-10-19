@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "holidays")
 public class Holiday {
@@ -17,6 +19,7 @@ public class Holiday {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	@Column(name = "date")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date date;
 
 	public Holiday() {
