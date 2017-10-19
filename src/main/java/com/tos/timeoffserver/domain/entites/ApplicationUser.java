@@ -14,15 +14,15 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import com.tos.timeoffserver.domain.entites.Holiday;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class ApplicationUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String username;
+	private String password;
 	private String personalId;
 	private String firstName;
 	private String secondName;
@@ -42,8 +42,8 @@ public class User {
 					@JoinColumn(name = "request_id", referencedColumnName = "id") })
 	private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
 
-	public User() {
-	}
+//	public ApplicationUser() {
+//	}
 
 	public String getAddress() {
 		return address;
@@ -149,4 +149,15 @@ public class User {
 		this.username = username;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+	
+	
 }

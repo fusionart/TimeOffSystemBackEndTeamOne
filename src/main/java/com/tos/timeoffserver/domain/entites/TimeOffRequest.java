@@ -36,7 +36,7 @@ public class TimeOffRequest {
 	private String note;
 
 	@ManyToMany(mappedBy = "requests")
-	private Set<User> users = new HashSet<User>(0);
+	private Set<ApplicationUser> users = new HashSet<ApplicationUser>(0);
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "document_map", joinColumns = {
@@ -44,7 +44,7 @@ public class TimeOffRequest {
 					@JoinColumn(name = "document_id", referencedColumnName = "document_id") })
 	private Set<Document> documents = new HashSet<Document>(0);
 
-	public Set<User> getStudents() {
+	public Set<ApplicationUser> getStudents() {
 		return users;
 	}
 

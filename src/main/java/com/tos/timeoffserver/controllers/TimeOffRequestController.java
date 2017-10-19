@@ -28,7 +28,7 @@ import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.services.TimeOffRequestService;
 import com.tos.timeoffserver.services.UserService;
-import com.tos.timeoffserver.domain.entites.User;
+import com.tos.timeoffserver.domain.entites.ApplicationUser;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
@@ -92,7 +92,7 @@ public class TimeOffRequestController {
 	@RequestMapping(value = "/approve", method = RequestMethod.POST)
 	public ResponseEntity<String> approveRequest(@RequestBody ChangeRequestStatusPost changeStatusPost) {
 		TimeOffRequest request = requestRepository.findOne(changeStatusPost.getRequestId());
-		User currentUser = userRepository.findOne(changeStatusPost.getUserId());
+		ApplicationUser currentUser = userRepository.findOne(changeStatusPost.getUserId());
 		if (!userSerice.isUserAdmin(currentUser)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
