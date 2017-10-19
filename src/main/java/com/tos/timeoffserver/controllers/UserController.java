@@ -1,8 +1,11 @@
 package com.tos.timeoffserver.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +21,7 @@ import com.tos.timeoffserver.domain.entites.ApplicationUser;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 
 import com.tos.timeoffserver.domain.model.LoginData;
+import com.tos.timeoffserver.domain.model.UserDetailsResponse;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -38,6 +42,13 @@ public class UserController {
 		System.out.println(" signUp --------------------------------");
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userRepo.save(user);
+	}
+	
+
+	@PostMapping("/user-info")
+	UserDetailsResponse getUserInfo(@RequestBody String username) {
+		UserDetailsResponse userInfo = new UserDetailsResponse(userRepo.findByUsername(username));
+		    return userInfo;
 	}
 
 	@GetMapping("/add")
