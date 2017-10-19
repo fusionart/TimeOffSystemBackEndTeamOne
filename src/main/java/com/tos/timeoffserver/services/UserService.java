@@ -1,37 +1,37 @@
 package com.tos.timeoffserver.services;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.Column;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.tos.timeoffserver.domain.entites.Holiday;
-import com.tos.timeoffserver.domain.entites.User;
+import com.tos.timeoffserver.domain.entites.ApplicationUser;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 
 @Service
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
-
-	public boolean isUserAdmin(User currentUser) {
+	
+	
+	public boolean isUserAdmin(ApplicationUser currentUser) {
 		boolean isAdmin = currentUser.getIsAdmin();
 		return isAdmin;
 
 	}
 
-	public void addUser(String firstName, String secondName, String lastName, String username, String email,
+	public void addUser(String firstName, String secondName, String lastName, String username, String password, String email,
 			String address, String telephone, String position, boolean isAdmin, int PtoAvailable, int PtoTotal) {
-		User newUser = new User();
+		ApplicationUser newUser = new ApplicationUser();
 		newUser.setFirstName(firstName);
 		newUser.setSecondName(secondName);
 		newUser.setLastName(lastName);
 		newUser.setUsername(username);
+		newUser.setPassword(password);
 		newUser.setEmail(email);
 		newUser.setAddress(address);
 		newUser.setTelephone(telephone);
@@ -45,13 +45,14 @@ public class UserService {
 
 	@PostConstruct
 	public void initDb() throws ParseException {
-		ArrayList<User> holydays = (ArrayList<User>) userRepository.findAll();
+		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+		ArrayList<ApplicationUser> holydays = (ArrayList<ApplicationUser>) userRepository.findAll();
 		if (holydays.size() < 2) {
-			addUser("Kiril", "Mihailov", "Kotev", "kiril_mk", "kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14",
+			addUser("Kiril", "Mihailov", "Kotev", "admin", bCryptPasswordEncoder.encode("123456"), "kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14",
 					"088 852 0822", "administrator", true, 8, 24);
-			addUser("Ivan", "Petkov", "Georgiev", "ivan_gp", "ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24",
+			addUser("Ivan", "Petkov", "Georgiev", "ivan_gp", bCryptPasswordEncoder.encode("123456"), "ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24",
 					"088 874 0841", "draftsman", false, 14, 20);
-			addUser("Kalina", "Kalinova", "Savova", "kalina_ks", "kalina_savova@gmail.com", "Vratsa, ul.Morava 18",
+			addUser("Kalina", "Kalinova", "Savova", "kalina_ks", bCryptPasswordEncoder.encode("123456"), "kalina_savova@gmail.com", "Vratsa, ul.Morava 18",
 					"088 874 0841", "secretary", false, 5, 22);
 		}
 	}
