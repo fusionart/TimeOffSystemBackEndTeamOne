@@ -1,8 +1,11 @@
 package com.tos.timeoffserver.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +21,8 @@ import com.tos.timeoffserver.domain.entites.ApplicationUser;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 
 import com.tos.timeoffserver.domain.model.LoginData;
+import com.tos.timeoffserver.domain.model.UserDetailsResponse;
+import com.tos.timeoffserver.domain.model.UserRequest;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -39,7 +44,17 @@ public class UserController {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userRepo.save(user);
 	}
-
+	
+	@CrossOrigin(origins = "http://localhost:4200")
+	@PostMapping("/user-info")
+		UserDetailsResponse getUserInfo(@RequestBody UserRequest userInfoRequest) {
+		System.out.println(" ----------------@PostMapping(\"/user-info\")-------------- ");
+		ApplicationUser requestedUser = userRepo.findByUsername(userInfoRequest.getUsername());
+		UserDetailsResponse userInfo = new UserDetailsResponse();
+		userInfo.modelToResponse(requestedUser);
+		    return userInfo;
+	}
+	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("/add")
 	public @ResponseBody ApplicationUser addNewUser(@RequestParam String firstName, @RequestParam String secondName,
 			@RequestParam String lastName, @RequestParam String address, @RequestParam String email,
