@@ -2,18 +2,19 @@ package com.tos.timeoffserver.domain.entites;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 
 @Entity
 @Table(name = "user")
@@ -36,14 +37,18 @@ public class ApplicationUser {
 	private int PtoAvailable;
 	private int PtoTotal;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "request_map", joinColumns = {
-			@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
-					@JoinColumn(name = "request_id", referencedColumnName = "id") })
-	private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
+	// @ManyToMany(cascade = CascadeType.ALL)
+	// @JoinTable(name = "request_map", joinColumns = {
+	// @JoinColumn(name = "user_id", referencedColumnName = "id") },
+	// inverseJoinColumns = {
+	// @JoinColumn(name = "request_id", referencedColumnName = "id") })
+	// private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
 
-//	public ApplicationUser() {
-//	}
+	// public ApplicationUser() {
+	// }
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+	private List<TimeOffRequest> requests;
 
 	public String getAddress() {
 		return address;
@@ -157,7 +162,16 @@ public class ApplicationUser {
 		this.password = password;
 	}
 
+	public List<TimeOffRequest> getRequests() {
+		return requests;
+	}
 
-	
-	
+	public void setRequests(List<TimeOffRequest> requests) {
+		this.requests = requests;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
 }

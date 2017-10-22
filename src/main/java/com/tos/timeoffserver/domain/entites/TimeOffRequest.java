@@ -6,14 +6,15 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-
 
 @Entity
 public class TimeOffRequest {
@@ -35,8 +36,9 @@ public class TimeOffRequest {
 	private String reason;
 	private String note;
 
-	@ManyToMany(mappedBy = "requests")
-	private Set<ApplicationUser> users = new HashSet<ApplicationUser>(0);
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private ApplicationUser user;
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "document_map", joinColumns = {
@@ -44,8 +46,20 @@ public class TimeOffRequest {
 					@JoinColumn(name = "document_id", referencedColumnName = "document_id") })
 	private Set<Document> documents = new HashSet<Document>(0);
 
-	public Set<ApplicationUser> getStudents() {
-		return users;
+	public ApplicationUser getUser() {
+		return user;
+	}
+
+	public void setUser(ApplicationUser user) {
+		this.user = user;
+	}
+
+	public Set<Document> getDocuments() {
+		return documents;
+	}
+
+	public void setDocuments(Set<Document> documents) {
+		this.documents = documents;
 	}
 
 	public Date getDateFinish() {
