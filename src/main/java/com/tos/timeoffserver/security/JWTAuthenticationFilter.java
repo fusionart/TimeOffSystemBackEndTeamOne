@@ -35,7 +35,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		this.authenticationManager = authenticationManager;
 	}
 	
-//	@CrossOrigin(origins = "http://localhost:4200")
 	@Override
 	@CrossOrigin
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)

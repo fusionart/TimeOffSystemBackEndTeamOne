@@ -5,11 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,10 +28,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.BindingResult;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
+import com.tos.timeoffserver.domain.model.CurrentUser;
 import com.tos.timeoffserver.domain.model.TimeOffRequestProxy;
 import com.tos.timeoffserver.domain.model.TimeOffRequestResponse;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
+import com.tos.timeoffserver.security.JWTAuthorizationFilter;
 import com.tos.timeoffserver.services.TimeOffRequestService;
 import com.tos.timeoffserver.services.UserService;
 import com.tos.timeoffserver.domain.entites.ApplicationUser;
@@ -46,7 +50,7 @@ public class TimeOffRequestController {
 	private TimeOffRequestService requestSerice;
 	@Autowired
 	private UserService userSerice;
-
+	private CurrentUser currentUser = CurrentUser.getInstance( );
 	// TimeOffRequest newRequest = new TimeOffRequest();
 
 	// @PostMapping(path = "/new_request")
@@ -69,9 +73,10 @@ public class TimeOffRequestController {
 	// }
 
 	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
-	public @ResponseBody String addNewRequest(@RequestBody TimeOffRequest timeOffRequest) {
+	public @ResponseBody String addNewRequest(@RequestBody TimeOffRequest timeOffRequest, HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
-
+		
+		String username = JWTAuthorizationFilter.class.getName();
 		TimeOffRequest newRequest = new TimeOffRequest();
 		newRequest.setDateOfSubmit(sqlCurrentDate);
 		System.out.println(timeOffRequest.getDateStart());
@@ -84,6 +89,8 @@ public class TimeOffRequestController {
 		newRequest.setReason(timeOffRequest.getReason());
 		newRequest.setNote(timeOffRequest.getNote());
 		newRequest.setStatus("unapproved");
+		newRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
+		System.out.println("-------------------------------------------------------new_request---------------------------save");
 		requestRepository.save(newRequest);
 		return "Added";
 	}
@@ -136,5 +143,4 @@ public class TimeOffRequestController {
 			return requestId;
 		}
 	}
-
 }

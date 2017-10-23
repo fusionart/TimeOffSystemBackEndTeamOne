@@ -15,6 +15,7 @@ public class UserResponse {
 		private String position;
 		private String telephone;
 		private int ptoTotal;
+		private int ptoAvailable;
 		private String address;
 		private String email;
 		private boolean isAdmin;
@@ -28,6 +29,7 @@ public class UserResponse {
 			this.position = userEntity.getPosition();
 			this.telephone = userEntity.getTelephone();
 			this.ptoTotal = userEntity.getPtoTotal();
+			this.ptoAvailable = userEntity.getPtoAvailable();
 			this.email = userEntity.getEmail();
 			this.address = userEntity.getAddress();
 			this.isAdmin = userEntity.getIsAdmin();
@@ -155,6 +157,20 @@ public class UserResponse {
 
 		public void setUserRequests(List<TimeOffRequestProxy> userRequests) {
 			this.userRequests = userRequests;
+		}
+
+
+
+
+		public int getPtoAvailable() {
+			return ptoAvailable;
+		}
+
+
+
+
+		public void setPtoAvailable(int ptoAvailable) {
+			this.ptoAvailable = ptoAvailable;
 		}
 
 

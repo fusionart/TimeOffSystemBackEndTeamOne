@@ -34,8 +34,8 @@ public class ApplicationUser {
 	private String position;
 	@Column(nullable = false, columnDefinition = "TINYINT(1)")
 	private boolean isAdmin;
-	private int PtoAvailable;
-	private int PtoTotal;
+	private int ptoAvailable;
+	private int ptoTotal;
 
 	// @ManyToMany(cascade = CascadeType.ALL)
 	// @JoinTable(name = "request_map", joinColumns = {
@@ -83,11 +83,11 @@ public class ApplicationUser {
 	}
 
 	public int getPtoAvailable() {
-		return PtoAvailable;
+		return ptoAvailable;
 	}
 
 	public int getPtoTotal() {
-		return PtoTotal;
+		return ptoTotal;
 	}
 
 	public String getSecondName() {
@@ -135,11 +135,11 @@ public class ApplicationUser {
 	}
 
 	public void setPtoAvailable(int ptoAvailable) {
-		PtoAvailable = ptoAvailable;
+		ptoAvailable = ptoAvailable;
 	}
 
 	public void setPtoTotal(int ptoTotal) {
-		PtoTotal = ptoTotal;
+		ptoTotal = ptoTotal;
 	}
 
 	public void setSecondName(String secondName) {
