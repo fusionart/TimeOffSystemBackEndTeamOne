@@ -1,6 +1,8 @@
 package com.tos.timeoffserver.controllers;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.validation.Valid;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.BindingResult;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
+import com.tos.timeoffserver.domain.model.TimeOffRequestProxy;
+import com.tos.timeoffserver.domain.model.TimeOffRequestResponse;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.services.TimeOffRequestService;
@@ -85,8 +89,15 @@ public class TimeOffRequestController {
 	}
 
 	@GetMapping(value = "/request-list")
-	public @ResponseBody Iterable<TimeOffRequest> getAllRequest() {
-		return requestRepository.findAll();
+	public @ResponseBody Iterable<TimeOffRequestResponse> getAllRequest() {
+		List<TimeOffRequest> requestEntitiesList = requestRepository.findAll();
+		List<TimeOffRequestResponse> requestListResponse = new ArrayList<TimeOffRequestResponse>();
+		for(TimeOffRequest requestEntity : requestEntitiesList) {
+			TimeOffRequestResponse request = new TimeOffRequestResponse();
+			request.entityToResponse(requestEntity);
+			requestListResponse.add(request);
+		}
+		return requestListResponse;
 	}
 
 	@RequestMapping(value = "/approve", method = RequestMethod.POST)
