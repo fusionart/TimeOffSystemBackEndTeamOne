@@ -5,7 +5,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+
+import com.tos.timeoffserver.controllers.TimeOffRequestController;
+import com.tos.timeoffserver.domain.model.CurrentUser;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -23,6 +29,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
     }
+    CurrentUser currentUser = CurrentUser.getInstance( );
+    private String authenticationName = "";
 //    @CrossOrigin(origins = "http://localhost:4200")
     @Override
     @CrossOrigin
@@ -37,7 +45,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
-
+        currentUser.setByUsername(authentication.getName());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(req, res);
     }
@@ -61,4 +69,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         }
         return null;
     }
+
+	public String getAuthenticationName() {
+		return authenticationName;
+	}
+
+	public void setAuthenticationName(String authenticationName) {
+		this.authenticationName = authenticationName;
+	}
+    
+    
 }

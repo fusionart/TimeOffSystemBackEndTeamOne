@@ -23,6 +23,7 @@ import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.domain.model.LoginData;
 import com.tos.timeoffserver.domain.model.UserDetailsResponse;
 import com.tos.timeoffserver.domain.model.UserRequest;
+import com.tos.timeoffserver.domain.model.UserResponse;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -40,7 +41,6 @@ public class UserController {
 
 	@PostMapping("/sign-up")
 	public void signUp(@RequestBody ApplicationUser user) {
-		System.out.println(" signUp --------------------------------");
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userRepo.save(user);
 	}
@@ -48,7 +48,6 @@ public class UserController {
 	@CrossOrigin(origins = "http://localhost:4200")
 	@PostMapping("/user-info")
 		UserDetailsResponse getUserInfo(@RequestBody UserRequest userInfoRequest) {
-		System.out.println(" ----------------@PostMapping(\"/user-info\")-------------- ");
 		ApplicationUser requestedUser = userRepo.findByUsername(userInfoRequest.getUsername());
 		UserDetailsResponse userInfo = new UserDetailsResponse();
 		userInfo.modelToResponse(requestedUser);
@@ -89,33 +88,11 @@ public class UserController {
 	}
 
 	@GetMapping("/get-user")
-	public @ResponseBody ApplicationUser getUser(@RequestParam Long id) {
-		return userRepo.findOne(id);
+	public @ResponseBody UserResponse getUser(@RequestParam Long id) {
+		UserResponse getUserResponse = new UserResponse();
+		getUserResponse.entityToResponse(userRepo.findOne(id));
+		return getUserResponse;
 	}
-
-	// @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
-	// produces = "application/json")
-	// public ResponseEntity<String> userAuthentication(@RequestBody LoginData
-	// loginData, HttpServletRequest request, HttpServletResponse respone) {
-	// ArrayList<User> users = (ArrayList<User>) userRepo.findAll();
-	// boolean isUserExist = false;
-	// long userId;
-	// System.out.println(loginData.getUsername());
-	//
-	// for (User user: users) {
-	// System.out.println(user.getUsername());
-	// if (user.getUsername().equals(loginData.getUsername())) {
-	// isUserExist = true;
-	// userId = user.getId();
-	// System.out.println("Found user!");
-	// }
-	// }
-	// if (!isUserExist) {
-	// System.out.println("User didn't exist");
-	// return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-	// }
-	// return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-	// }
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public @ResponseBody ApplicationUser loginUser(@RequestBody LoginData loginData) {
