@@ -90,6 +90,7 @@ public class TimeOffRequestController {
 		newRequest.setNote(timeOffRequest.getNote());
 		newRequest.setStatus("unapproved");
 		newRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
+		userSerice.changeUserProAvailable(timeOffRequest.getType(), timeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
 		System.out.println("-------------------------------------------------------new_request---------------------------save");
 		requestRepository.save(newRequest);
 		return "Added";

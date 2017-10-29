@@ -16,6 +16,7 @@ public class TimeOffRequestProxy {
 	private String status;
 	private String reason;
 	private String note;
+	private String allDates;
 	
 	public void entityToResponse (TimeOffRequest timeOffRequestEntity) {
 		this.id = timeOffRequestEntity.getId();
@@ -27,6 +28,7 @@ public class TimeOffRequestProxy {
 		this.status = timeOffRequestEntity.getStatus();
 		this.reason = timeOffRequestEntity.getReason();
 		this.note = timeOffRequestEntity.getNote();
+		this.allDates = timeOffRequestEntity.getDateStart() + " - " + timeOffRequestEntity.getDateFinish();
 	}
 
 	public Long getId() {
@@ -100,6 +102,13 @@ public class TimeOffRequestProxy {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	
+
+	public String getAllDates() {
+		return allDates;
+	}
+
+	public void setAllDates(String allDates) {
+		this.allDates = allDates;
+	}
 	
 }

@@ -135,11 +135,11 @@ public class ApplicationUser {
 	}
 
 	public void setPtoAvailable(int ptoAvailable) {
-		ptoAvailable = ptoAvailable;
+		this.ptoAvailable = ptoAvailable;
 	}
 
 	public void setPtoTotal(int ptoTotal) {
-		ptoTotal = ptoTotal;
+		this.ptoTotal = ptoTotal;
 	}
 
 	public void setSecondName(String secondName) {

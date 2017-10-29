@@ -16,16 +16,16 @@ import com.tos.timeoffserver.domain.repositories.UserRepository;
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
-	
-	
+
 	public boolean isUserAdmin(ApplicationUser currentUser) {
 		boolean isAdmin = currentUser.getIsAdmin();
 		return isAdmin;
 
 	}
 
-	public void addUser(String firstName, String secondName, String lastName, String username, String password, String email,
-			String address, String telephone, String position, boolean isAdmin, int PtoAvailable, int PtoTotal) {
+	public void addUser(String firstName, String secondName, String lastName, String username, String password,
+			String email, String address, String telephone, String position, boolean isAdmin, int PtoAvailable,
+			int PtoTotal) {
 		ApplicationUser newUser = new ApplicationUser();
 		newUser.setFirstName(firstName);
 		newUser.setSecondName(secondName);
@@ -43,17 +43,30 @@ public class UserService {
 		userRepository.save(newUser);
 	}
 
+	public void changeUserProAvailable(String type, int days, ApplicationUser currentUser) {
+		if (type.equals("PTO")) {
+			ApplicationUser userToUpdate = userRepository.findOne(currentUser.getId());
+			System.out.println("findone: " + currentUser.getId());
+			System.out.println("type: " + type + "; days: " + days + "; user: " + currentUser.getPtoAvailable());
+			userToUpdate.setPtoAvailable(currentUser.getPtoAvailable() - days);
+			userRepository.save(userToUpdate);
+		}
+
+	}
+
 	@PostConstruct
 	public void initDb() throws ParseException {
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 		ArrayList<ApplicationUser> holydays = (ArrayList<ApplicationUser>) userRepository.findAll();
 		if (holydays.size() < 2) {
-			addUser("Kiril", "Mihailov", "Kotev", "admin", bCryptPasswordEncoder.encode("123456"), "kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14",
-					"088 852 0822", "administrator", true, 8, 24);
-			addUser("Ivan", "Petkov", "Georgiev", "ivan_gp", bCryptPasswordEncoder.encode("123456"), "ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24",
-					"088 874 0841", "draftsman", false, 14, 20);
-			addUser("Kalina", "Kalinova", "Savova", "kalina_ks", bCryptPasswordEncoder.encode("123456"), "kalina_savova@gmail.com", "Vratsa, ul.Morava 18",
-					"088 874 0841", "secretary", false, 5, 22);
+			addUser("Kiril", "Mihailov", "Kotev", "admin", bCryptPasswordEncoder.encode("123456"),
+					"kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14", "088 852 0822", "administrator", true, 8,
+					24);
+			addUser("Ivan", "Petkov", "Georgiev", "ivan_gp", bCryptPasswordEncoder.encode("123456"),
+					"ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24", "088 874 0841", "draftsman", false, 14,
+					20);
+			addUser("Kalina", "Kalinova", "Savova", "kalina_ks", bCryptPasswordEncoder.encode("123456"),
+					"kalina_savova@gmail.com", "Vratsa, ul.Morava 18", "088 874 0841", "secretary", false, 5, 22);
 		}
 	}
 }
