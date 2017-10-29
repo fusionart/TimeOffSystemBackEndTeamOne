@@ -14,6 +14,7 @@ public class TimeOffRequestResponse {
 	private String status;
 	private String reason;
 	private String note;
+	private String personalId;
 	
 	public void entityToResponse (TimeOffRequest timeOffRequestEntity) {
 		this.id = timeOffRequestEntity.getId();
@@ -25,6 +26,7 @@ public class TimeOffRequestResponse {
 		this.status = timeOffRequestEntity.getStatus();
 		this.reason = timeOffRequestEntity.getReason();
 		this.note = timeOffRequestEntity.getNote();
+		this.personalId = timeOffRequestEntity.getUser().getPersonalId();
 	}
 
 	public Long getId() {
@@ -97,6 +99,14 @@ public class TimeOffRequestResponse {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public String getPersonalId() {
+		return personalId;
+	}
+
+	public void setPersonalId(String personalId) {
+		this.personalId = personalId;
 	}
 	
 }
