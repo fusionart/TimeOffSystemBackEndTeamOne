@@ -1,5 +1,7 @@
 package com.tos.timeoffserver.domain.entites;
 
+
+
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -106,8 +108,8 @@ public class TimeOffRequest {
 		this.dateOfSubmit = dateOfSubmit;
 	}
 
-	public void setDateStart(Date dateStart) {
-		this.dateStart = dateStart;
+	public void setDateStart(Date date) {
+		this.dateStart = date;
 	}
 
 	public void setDays(int days) {

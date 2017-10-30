@@ -47,7 +47,7 @@ public class TimeOffRequestController {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private TimeOffRequestService requestSerice;
+	private TimeOffRequestService requestService;
 	@Autowired
 	private UserService userSerice;
 	private CurrentUser currentUser = CurrentUser.getInstance( );
@@ -75,14 +75,11 @@ public class TimeOffRequestController {
 	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
 	public @ResponseBody String addNewRequest(@RequestBody TimeOffRequest timeOffRequest, HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
-		
 		String username = JWTAuthorizationFilter.class.getName();
 		TimeOffRequest newRequest = new TimeOffRequest();
 		newRequest.setDateOfSubmit(sqlCurrentDate);
-		System.out.println(timeOffRequest.getDateStart());
-		System.out.println(timeOffRequest.getDateFinish());
-		newRequest.setDateStart(requestSerice.startDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		newRequest.setDateFinish(requestSerice.finishDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		newRequest.setDateStart(requestService.startDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		newRequest.setDateFinish(requestService.finishDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
 		//newRequest.setDays(requestSerice.getTimeOffDays(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
 		newRequest.setDays(timeOffRequest.getDays());
 		newRequest.setType(timeOffRequest.getType());
@@ -90,7 +87,6 @@ public class TimeOffRequestController {
 		newRequest.setNote(timeOffRequest.getNote());
 		newRequest.setStatus("unapproved");
 		newRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
-		System.out.println("-------------------------------------------------------new_request---------------------------save");
 		requestRepository.save(newRequest);
 		return "Added";
 	}
@@ -101,12 +97,13 @@ public class TimeOffRequestController {
 		List<TimeOffRequestResponse> requestListResponse = new ArrayList<TimeOffRequestResponse>();
 		for(TimeOffRequest requestEntity : requestEntitiesList) {
 			TimeOffRequestResponse request = new TimeOffRequestResponse();
-			request.entityToResponse(requestEntity);
+			request.entityToResponse(requestEntity, requestService);
 			requestListResponse.add(request);
 		}
 		return requestListResponse;
 	}
 
+	
 	@RequestMapping(value = "/approve", method = RequestMethod.POST)
 	public ResponseEntity<String> approveRequest(@RequestBody ChangeRequestStatusPost changeStatusPost) {
 		TimeOffRequest request = requestRepository.findOne(changeStatusPost.getRequestId());
@@ -117,7 +114,7 @@ public class TimeOffRequestController {
 		if (request == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		requestSerice.approveRequest(request);
+		requestService.approveRequest(request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
