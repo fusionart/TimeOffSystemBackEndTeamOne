@@ -7,7 +7,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.tos.timeoffserver.domain.repositories.HolidayRepository;
@@ -16,6 +20,8 @@ import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 
 @Service
+//@Configurable
+//@Component
 public class TimeOffRequestService {
 	@Autowired
 	private TimeOffRequestRepository requestRepository;
@@ -270,6 +276,7 @@ public class TimeOffRequestService {
 	private String getMonthNameFromDate(java.util.Date date) {
 		return getMonthNameFromCalendar(getCalendarForDate(date));
 	}
+	
 
 	private boolean isHoliday(java.util.Date date) {
 		Iterable<Holiday> holidayDates = holidayRepository.findAll();
