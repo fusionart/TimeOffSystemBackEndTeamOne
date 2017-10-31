@@ -29,14 +29,17 @@ import org.springframework.validation.BindingResult;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 import com.tos.timeoffserver.domain.model.CurrentUser;
+import com.tos.timeoffserver.domain.model.NewTimeOffRequestBody;
 import com.tos.timeoffserver.domain.model.TimeOffRequestProxy;
 import com.tos.timeoffserver.domain.model.TimeOffRequestResponse;
+import com.tos.timeoffserver.domain.repositories.TimeOffDatesRepository;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.security.JWTAuthorizationFilter;
 import com.tos.timeoffserver.services.TimeOffRequestService;
 import com.tos.timeoffserver.services.UserService;
 import com.tos.timeoffserver.domain.entites.ApplicationUser;
+import com.tos.timeoffserver.domain.entites.TimeOffDate;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
@@ -50,6 +53,8 @@ public class TimeOffRequestController {
 	private TimeOffRequestService requestService;
 	@Autowired
 	private UserService userSerice;
+	@Autowired
+	private TimeOffDatesRepository datesRepository;
 	private CurrentUser currentUser = CurrentUser.getInstance( );
 	// TimeOffRequest newRequest = new TimeOffRequest();
 
@@ -73,23 +78,31 @@ public class TimeOffRequestController {
 	// }
 
 	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
-	public @ResponseBody String addNewRequest(@RequestBody TimeOffRequest timeOffRequest, HttpServletRequest req) {
+	public @ResponseBody String addNewRequest(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
+		System.out.println(newTimeOffRequest.getSelectedDays() + "------******************************************--------------------------------------");
 		String username = JWTAuthorizationFilter.class.getName();
-		TimeOffRequest newRequest = new TimeOffRequest();
-		newRequest.setDateOfSubmit(sqlCurrentDate);
-		newRequest.setDateStart(requestService.startDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		newRequest.setDateFinish(requestService.finishDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		//newRequest.setDays(requestSerice.getTimeOffDays(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		newRequest.setDays(timeOffRequest.getDays());
-		newRequest.setType(timeOffRequest.getType());
-		newRequest.setReason(timeOffRequest.getReason());
-		newRequest.setNote(timeOffRequest.getNote());
-		newRequest.setStatus("unapproved");
-		newRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
-		userSerice.changeUserProAvailable(timeOffRequest.getType(), timeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
+		TimeOffRequest timeOffRequest = new TimeOffRequest();
+		timeOffRequest.setDateOfSubmit(sqlCurrentDate);
+		timeOffRequest.setDateStart(requestService.startDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDateFinish(requestService.finishDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDays(newTimeOffRequest.getDays());
+		timeOffRequest.setType(newTimeOffRequest.getType());
+		timeOffRequest.setReason(newTimeOffRequest.getReason());
+		timeOffRequest.setNote(newTimeOffRequest.getNote());
+		timeOffRequest.setStatus("unapproved");
+		timeOffRequest.setDates("to do");
+		timeOffRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
+		userSerice.changeUserProAvailable(newTimeOffRequest.getType(), newTimeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
 		System.out.println("-------------------------------------------------------new_request---------------------------save");
-		requestRepository.save(newRequest);
+		requestRepository.save(timeOffRequest);
+		Date[] dates = newTimeOffRequest.getSelectedDays();
+		for (Date date: dates) {
+			TimeOffDate timeOffDates = new TimeOffDate();
+			timeOffDates.setDate(date);
+			timeOffDates.setRequest(timeOffRequest);
+			datesRepository.save(timeOffDates);
+		}	
 		return "Added";
 	}
 
