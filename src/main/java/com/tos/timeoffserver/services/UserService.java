@@ -51,7 +51,6 @@ public class UserService {
 			userToUpdate.setPtoAvailable(currentUser.getPtoAvailable() - days);
 			userRepository.save(userToUpdate);
 		}
-
 	}
 
 	@PostConstruct
@@ -60,13 +59,13 @@ public class UserService {
 		ArrayList<ApplicationUser> holydays = (ArrayList<ApplicationUser>) userRepository.findAll();
 		if (holydays.size() < 2) {
 			addUser("Kiril", "Mihailov", "Kotev", "admin", bCryptPasswordEncoder.encode("123456"),
-					"kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14", "088 852 0822", "administrator", true, 8,
+					"kiril.kotev@gmail.com", "Vratsa, bul.Mito Orozov 14", "088 852 0822", "administrator", true, 24,
 					24);
 			addUser("Ivan", "Petkov", "Georgiev", "ivan_gp", bCryptPasswordEncoder.encode("123456"),
-					"ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24", "088 874 0841", "draftsman", false, 14,
+					"ivan_georgiev@gmail.com", "Vratsa, bul.Hristo Botev 24", "088 874 0841", "draftsman", false, 20,
 					20);
 			addUser("Kalina", "Kalinova", "Savova", "kalina_ks", bCryptPasswordEncoder.encode("123456"),
-					"kalina_savova@gmail.com", "Vratsa, ul.Morava 18", "088 874 0841", "secretary", false, 5, 22);
+					"kalina_savova@gmail.com", "Vratsa, ul.Morava 18", "088 874 0841", "secretary", false, 22, 22);
 		}
 	}
 }

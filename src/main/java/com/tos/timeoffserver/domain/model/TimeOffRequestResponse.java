@@ -1,10 +1,18 @@
 package com.tos.timeoffserver.domain.model;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
+import com.tos.timeoffserver.services.TimeOffRequestService;
 
 public class TimeOffRequestResponse {
+	
 	private Long id;
 	private Date dateOfSubmit;
 	private String type;
@@ -17,7 +25,7 @@ public class TimeOffRequestResponse {
 	private String personalId;
 	private String allDates;
 
-	public void entityToResponse(TimeOffRequest timeOffRequestEntity) {
+	public void entityToResponse(TimeOffRequest timeOffRequestEntity, TimeOffRequestService requestService) {
 		this.id = timeOffRequestEntity.getId();
 		this.dateOfSubmit = timeOffRequestEntity.getDateOfSubmit();
 		this.type = timeOffRequestEntity.getType();
@@ -28,7 +36,7 @@ public class TimeOffRequestResponse {
 		this.reason = timeOffRequestEntity.getReason();
 		this.note = timeOffRequestEntity.getNote();
 		this.personalId = timeOffRequestEntity.getUser().getPersonalId();
-		this.allDates = timeOffRequestEntity.getDateStart() + " - " + timeOffRequestEntity.getDateFinish();
+		this.allDates = timeOffRequestEntity.getDates();
 	}
 
 	public Long getId() {

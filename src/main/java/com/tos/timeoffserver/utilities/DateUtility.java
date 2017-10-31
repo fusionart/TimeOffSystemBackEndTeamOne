@@ -1,4 +1,4 @@
-package com.tos.timeoffserver.services;
+package com.tos.timeoffserver.utilities;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -7,109 +7,23 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import com.tos.timeoffserver.domain.repositories.HolidayRepository;
-import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.domain.entites.Holiday;
-import com.tos.timeoffserver.domain.entites.TimeOffRequest;
+import com.tos.timeoffserver.domain.repositories.HolidayRepository;
 
-@Service
-//@Configurable
-//@Component
-public class TimeOffRequestService {
-	@Autowired
-	private TimeOffRequestRepository requestRepository;
-	@Autowired
-	private HolidayRepository holidayRepository;
+public class DateUtility {
 
-	public void approveRequest(TimeOffRequest request) {
-		request.setStatus("approved");
-		requestRepository.save(request);
-	}
-
-	// public Date getStartDate(Date date) {
-	// // TODO Auto-generated method stub
-	//
-	// // return sql.date!!!
-	// return null;
-	// }
-	//
-	// public Date getFinishDate(Date date) {
-	// // TODO Auto-generated method stub
-	//
-	// return sql.Date(date);
-	// //return null;
-	// }
-
-	public int getTimeOffDays(Date startDate, Date finishDate, int workingDays) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date[] dates = orderDates(startDate, finishDate);
-		Iterable<Holiday> holidayDates = holidayRepository.findAll();
-		// Date tempDate;
-		try {
-			Calendar start = Calendar.getInstance();
-			start.setTime(dates[0]);
-			Calendar end = Calendar.getInstance();
-			end.setTime(dates[1]);
-			while (!start.after(end)) {
-				int day = start.get(Calendar.DAY_OF_WEEK);
-				day = day + 2;
-				if (day > 7) {
-					day = day - 7;
-				}
-				if ((day != Calendar.SATURDAY) && (day != Calendar.SUNDAY))
-					workingDays++;
-				start.add(Calendar.DATE, 1);
-			}
-		} catch (
-
-		Exception e) {
-			e.printStackTrace();
-		}
-		return workingDays;
-	}
-
-	public Date startDate(Date startDate, Date finishDate) {
-		Date[] dates = orderDates(startDate, finishDate);
-		return dates[0];
-	}
-
-	public Date finishDate(Date startDate, Date finishDate) {
-		Date[] dates = orderDates(startDate, finishDate);
-		return dates[1];
-	}
-
-	private Date[] orderDates(Date startDate, Date finishDate) {
-		Date tempDate;
-		Date[] dates = new Date[2];
-		if (startDate.after(finishDate)) {
-			tempDate = startDate;
-			startDate = finishDate;
-			finishDate = tempDate;
-		}
-		dates[0] = startDate;
-		dates[1] = finishDate;
-		return dates;
-	}
-
-	public String getDates(Date dateStart, Date dateFinish) {
+	
+	public String getDates(Date dateStart, Date dateFinish, Iterable<Holiday> holidayDates) {
 		System.out.println("---------------------------------getDates-------------Inteval: " + dateStart + " - "
 				+ dateFinish + "-------------------------------");
-		List<java.util.Date> workdays = getWorkdays(dateStart, dateFinish);
+		List<java.util.Date> workdays = getWorkdays(dateStart, dateFinish, holidayDates);
 		Calendar start = Calendar.getInstance();
 		start.setTime(dateStart);
 		Calendar end = Calendar.getInstance();
 		end.setTime(dateFinish);
 		String dates = "";
-		java.util.Date currentDay = dateStart;
-		java.util.Date nextDay = addDaysToDate(currentDay, 1);
-		java.util.Date theDayAfterNextDay = addDaysToDate(nextDay, 1);
 		if (getDifferenceDays(dateStart, dateFinish) == 0) {
 			dates = start.get(Calendar.DAY_OF_MONTH) + " " + getMonthNameFromCalendar(start) + " "
 					+ start.get(Calendar.YEAR);
@@ -140,6 +54,8 @@ public class TimeOffRequestService {
 						dates = dates + getDayOfMonth(workdays.get(index + 1));
 					}
 				} else if (!isSameMonth(workdays.get(index), workdays.get(index + 1))) {
+					System.out.println(
+							"RAZLICHNI MESECI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
 					// different months
 					if (!isSameYear(workdays.get(index), workdays.get(index + 1))) {
 						// ...and a different year
@@ -151,6 +67,9 @@ public class TimeOffRequestService {
 					} else {
 						if (isDatesEquals(dateStart, workdays.get(index))) {
 							dates = dates + " " + getMonthNameFromDate(workdays.get(index)) + ", ";
+							// /* if (!isDatesEquals(dateFinish, workdays.get(index + 1))) {
+							// dates = dates + getDayOfMonth(workdays.get(index + 1));
+							// }*/
 							continue;
 						}
 						dates = dates + "-" + getDayOfMonth(workdays.get(index)) + " "
@@ -166,21 +85,14 @@ public class TimeOffRequestService {
 		return dates;
 	}
 
-	private List<java.util.Date> getWorkdays(Date dateStart, Date dateFinish) {
+	private List<java.util.Date> getWorkdays(Date dateStart, Date dateFinish, Iterable<Holiday> holidayDates) {
 		List<java.util.Date> workdays = new ArrayList<java.util.Date>();
 		for (java.util.Date date = dateStart; !date.after(dateFinish); date = addDaysToDate(date, 1)) {
-			if (!isHoliday(date) && !isSaturday(date) && !isSunday(date)) {
+			if (!isHoliday(date, holidayDates) && !isSaturday(date) && !isSunday(date)) {
 				workdays.add(date);
 			}
 		}
 		return workdays;
-	}
-
-	private java.util.Date getNextWorkday(java.util.Date theDayAfterNextDay) {
-		do {
-			theDayAfterNextDay = addDaysToDate(theDayAfterNextDay, 1);
-		} while (isHoliday(theDayAfterNextDay));
-		return theDayAfterNextDay;
 	}
 
 	private int getDayOfMonth(java.util.Date date) {
@@ -250,11 +162,6 @@ public class TimeOffRequestService {
 		return "" + calendar.get(Calendar.YEAR);
 	}
 
-	private int getMonthNumber(java.util.Date date) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		return calendar.get(Calendar.MONTH);
-	}
 
 	private Calendar getCalendarForDate(java.util.Date date) {
 		Calendar calendar = Calendar.getInstance();
@@ -276,10 +183,8 @@ public class TimeOffRequestService {
 	private String getMonthNameFromDate(java.util.Date date) {
 		return getMonthNameFromCalendar(getCalendarForDate(date));
 	}
-	
 
-	private boolean isHoliday(java.util.Date date) {
-		Iterable<Holiday> holidayDates = holidayRepository.findAll();
+	private boolean isHoliday(java.util.Date date, Iterable<Holiday> holidayDates) {
 		for (Holiday holiday : holidayDates) {
 			if (isDatesEquals(holiday.getDate(), date)) {
 				return true;

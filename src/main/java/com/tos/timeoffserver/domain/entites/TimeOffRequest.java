@@ -1,7 +1,10 @@
 package com.tos.timeoffserver.domain.entites;
 
+
+
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -32,10 +36,15 @@ public class TimeOffRequest {
 	@NotNull
 	private Date dateFinish;
 	@NotNull
+	private String dates;
+	@NotNull
 	private String status;
 	private String reason;
 	private String note;
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "request", fetch = FetchType.LAZY)
+	private List<TimeOffDate> timeOffDates;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private ApplicationUser user;
@@ -106,8 +115,8 @@ public class TimeOffRequest {
 		this.dateOfSubmit = dateOfSubmit;
 	}
 
-	public void setDateStart(Date dateStart) {
-		this.dateStart = dateStart;
+	public void setDateStart(Date date) {
+		this.dateStart = date;
 	}
 
 	public void setDays(int days) {
@@ -132,6 +141,22 @@ public class TimeOffRequest {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getDates() {
+		return dates;
+	}
+
+	public void setDates(String dates) {
+		this.dates = dates;
+	}
+
+	public List<TimeOffDate> getTimeOffDates() {
+		return timeOffDates;
+	}
+
+	public void setTimeOffDates(List<TimeOffDate> timeOffDates) {
+		this.timeOffDates = timeOffDates;
 	}
 	
 }

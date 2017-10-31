@@ -29,14 +29,17 @@ import org.springframework.validation.BindingResult;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 import com.tos.timeoffserver.domain.model.CurrentUser;
+import com.tos.timeoffserver.domain.model.NewTimeOffRequestBody;
 import com.tos.timeoffserver.domain.model.TimeOffRequestProxy;
 import com.tos.timeoffserver.domain.model.TimeOffRequestResponse;
+import com.tos.timeoffserver.domain.repositories.TimeOffDatesRepository;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.security.JWTAuthorizationFilter;
 import com.tos.timeoffserver.services.TimeOffRequestService;
 import com.tos.timeoffserver.services.UserService;
 import com.tos.timeoffserver.domain.entites.ApplicationUser;
+import com.tos.timeoffserver.domain.entites.TimeOffDate;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
@@ -47,9 +50,11 @@ public class TimeOffRequestController {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private TimeOffRequestService requestSerice;
+	private TimeOffRequestService requestService;
 	@Autowired
 	private UserService userSerice;
+	@Autowired
+	private TimeOffDatesRepository datesRepository;
 	private CurrentUser currentUser = CurrentUser.getInstance( );
 	// TimeOffRequest newRequest = new TimeOffRequest();
 
@@ -73,26 +78,29 @@ public class TimeOffRequestController {
 	// }
 
 	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
-	public @ResponseBody String addNewRequest(@RequestBody TimeOffRequest timeOffRequest, HttpServletRequest req) {
+	public @ResponseBody String addNewRequest(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
-		
 		String username = JWTAuthorizationFilter.class.getName();
-		TimeOffRequest newRequest = new TimeOffRequest();
-		newRequest.setDateOfSubmit(sqlCurrentDate);
-		System.out.println(timeOffRequest.getDateStart());
-		System.out.println(timeOffRequest.getDateFinish());
-		newRequest.setDateStart(requestSerice.startDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		newRequest.setDateFinish(requestSerice.finishDate(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		//newRequest.setDays(requestSerice.getTimeOffDays(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
-		newRequest.setDays(timeOffRequest.getDays());
-		newRequest.setType(timeOffRequest.getType());
-		newRequest.setReason(timeOffRequest.getReason());
-		newRequest.setNote(timeOffRequest.getNote());
-		newRequest.setStatus("unapproved");
-		newRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
-		userSerice.changeUserProAvailable(timeOffRequest.getType(), timeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
-		System.out.println("-------------------------------------------------------new_request---------------------------save");
-		requestRepository.save(newRequest);
+		TimeOffRequest timeOffRequest = new TimeOffRequest();
+		timeOffRequest.setDateOfSubmit(sqlCurrentDate);
+		timeOffRequest.setDateStart(requestService.startDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDateFinish(requestService.finishDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDays(newTimeOffRequest.getDays());
+		timeOffRequest.setType(newTimeOffRequest.getType());
+		timeOffRequest.setReason(newTimeOffRequest.getReason());
+		timeOffRequest.setNote(newTimeOffRequest.getNote());
+		timeOffRequest.setStatus("unapproved");
+		timeOffRequest.setDates(requestService.getDates(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		timeOffRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
+		userSerice.changeUserProAvailable(newTimeOffRequest.getType(), newTimeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
+		requestRepository.save(timeOffRequest);
+		Date[] dates = newTimeOffRequest.getSelectedDays();
+		for (Date date: dates) {
+			TimeOffDate timeOffDates = new TimeOffDate();
+			timeOffDates.setDate(date);
+			timeOffDates.setRequest(timeOffRequest);
+			datesRepository.save(timeOffDates);
+		}	
 		return "Added";
 	}
 
@@ -102,12 +110,13 @@ public class TimeOffRequestController {
 		List<TimeOffRequestResponse> requestListResponse = new ArrayList<TimeOffRequestResponse>();
 		for(TimeOffRequest requestEntity : requestEntitiesList) {
 			TimeOffRequestResponse request = new TimeOffRequestResponse();
-			request.entityToResponse(requestEntity);
+			request.entityToResponse(requestEntity, requestService);
 			requestListResponse.add(request);
 		}
 		return requestListResponse;
 	}
 
+	
 	@RequestMapping(value = "/approve", method = RequestMethod.POST)
 	public ResponseEntity<String> approveRequest(@RequestBody ChangeRequestStatusPost changeStatusPost) {
 		TimeOffRequest request = requestRepository.findOne(changeStatusPost.getRequestId());
@@ -118,7 +127,7 @@ public class TimeOffRequestController {
 		if (request == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		requestSerice.approveRequest(request);
+		requestService.approveRequest(request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
