@@ -8,11 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.tos.timeoffserver.domain.repositories.HolidayRepository;
@@ -20,7 +16,6 @@ import com.tos.timeoffserver.domain.repositories.TimeOffDatesRepository;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.utilities.DateUtility;
 
-import com.mysql.fabric.xmlrpc.base.Array;
 import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 
@@ -92,7 +87,7 @@ public class TimeOffRequestService {
 		return dates;
 	}
 
-	public String getDates(Date dateStart, Date dateFinish) {
+	public String getDatesOld(Date dateStart, Date dateFinish) {
 		System.out.println("---------------------------------getDates-------------Inteval: " + dateStart + " - "
 				+ dateFinish + "-------------------------------");
 		List<java.util.Date> workdays = getWorkdays(dateStart, dateFinish);
@@ -161,7 +156,7 @@ public class TimeOffRequestService {
 		return dates;
 	}
 
-	public String getDates2(Date[] dates) {
+	public String getDates(Date[] dates) {
 		Arrays.sort(dates);
 		Date dateStart = dates[0];
 		Date dateFinish = dates[dates.length - 1];
@@ -180,6 +175,7 @@ public class TimeOffRequestService {
 		if (getDifferenceDays(dateStart, dateFinish) == 0) {
 			datesString = start.get(Calendar.DAY_OF_MONTH) + " " + getMonthNameFromCalendar(start) + " "
 					+ start.get(Calendar.YEAR);
+			System.out.println(datesString + " ----> #1");
 			System.out.println(datesString + " ------------------------> RESULT!");
 			return datesString;
 		} else {
@@ -192,7 +188,7 @@ public class TimeOffRequestService {
 						&& isSameMonth(workdays.get(index), workdays.get(index - 1)) ? "-" : "";
 				datesString = datesString + prefix + end.get(Calendar.DAY_OF_MONTH) + " "
 						+ getMonthNameFromCalendar(end) + " " + end.get(Calendar.YEAR);
-				System.out.println(datesString + " ------------------------> RESULT!");
+				System.out.println(datesString + " ------------------------> RESULT! #2");
 				return datesString;
 			} else if (isDatesEquals(workdays.get(index + 1), addDaysToDate(workdays.get(index), 1))
 					&& isSameMonth(workdays.get(index), workdays.get(index + 1))) {
@@ -202,41 +198,60 @@ public class TimeOffRequestService {
 				if (isSameMonth(workdays.get(index), workdays.get(index + 1))) {
 					// same month
 					if (isDatesEquals(dateStart, workdays.get(index))) {
+						// first date
 						datesString = datesString + ", " + getDayOfMonth(workdays.get(index + 1));
+						System.out.println(datesString + " ----> #3");
 						continue;
 					}
 					if (!isDatesEquals(workdays.get(index - 1), addDaysToDate(workdays.get(index), -1))
 							&& !isDatesEquals(workdays.get(index + 1), dateFinish)) {
 						datesString = datesString + ", " + getDayOfMonth(workdays.get(index + 1));
+						System.out.println(datesString + " ----> #4");
 						continue;
 					}
-					if (getDayOfMonth(workdays.get(index)) == 1 ) {
+					if (getDayOfMonth(workdays.get(index)) == 1) {
 						continue;
 					}
 					String prefix = getDayOfMonth(workdays.get(index)) != 1 ? "-" : "";
 					datesString = datesString + prefix + getDayOfMonth(workdays.get(index)) + ", ";
+					System.out.println(datesString + " ----> #5");
 					if (!isDatesEquals(dateFinish, workdays.get(index + 1))) {
 						// if next date is't last
 						datesString = datesString + getDayOfMonth(workdays.get(index + 1));
+						System.out.println(datesString + " ----> #6");
 					}
 				} else if (!isSameMonth(workdays.get(index), workdays.get(index + 1))) {
 					// different months
 					if (!isSameYear(workdays.get(index), workdays.get(index + 1))) {
 						// ...and a different year
+						if (!isDatesEquals(workdays.get(index - 1), addDaysToDate(workdays.get(index), -1))) {
+							datesString = datesString + " " + getMonthNameFromDate(workdays.get(index)) + ", " 
+									+ getYear(workdays.get(index)) + ", ";
+							continue;
+						}
 						datesString = datesString + "-" + getDayOfMonth(workdays.get(index)) + " "
 								+ getMonthNameFromDate(workdays.get(index)) + " " + getYear(workdays.get(index)) + ", ";
+						System.out.println(datesString + " ----> #7");
 						if (!isDatesEquals(dateFinish, workdays.get(index + 1))) {
 							datesString = datesString + getDayOfMonth(workdays.get(index + 1));
+							System.out.println(datesString + " ----> #8");
 						}
 					} else {
 						if (isDatesEquals(dateStart, workdays.get(index))) {
+							datesString = datesString + " " + getMonthNameFromDate(workdays.get(index)) + ", ";
+							System.out.println(datesString + " ----> #9");
+							continue;
+						}
+						if (!isDatesEquals(workdays.get(index - 1), addDaysToDate(workdays.get(index), -1))) {
 							datesString = datesString + " " + getMonthNameFromDate(workdays.get(index)) + ", ";
 							continue;
 						}
 						datesString = datesString + "-" + getDayOfMonth(workdays.get(index)) + " "
 								+ getMonthNameFromDate(workdays.get(index)) + ", ";
+						System.out.println(datesString + " ----> #10");
 						if (!isDatesEquals(dateFinish, workdays.get(index + 1))) {
 							datesString = datesString + getDayOfMonth(workdays.get(index + 1));
+							System.out.println(datesString + " ----> #11");
 						}
 					}
 				}

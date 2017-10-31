@@ -70,7 +70,7 @@ public class TimeOffRequestController {
 		timeOffRequest.setReason(newTimeOffRequest.getReason());
 		timeOffRequest.setNote(newTimeOffRequest.getNote());
 		timeOffRequest.setStatus("unapproved");
-		timeOffRequest.setDates(requestService.getDates(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
+		timeOffRequest.setDates(requestService.getDates(newTimeOffRequest.getSelectedDays()));
 		timeOffRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
 		userSerice.changeUserProAvailable(newTimeOffRequest.getType(), newTimeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
 		requestRepository.save(timeOffRequest);
@@ -86,7 +86,7 @@ public class TimeOffRequestController {
 
 	@RequestMapping(value = "/test", method = RequestMethod.POST)
 	public @ResponseBody String getStringDates(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
-		String dates = requestService.getDates2(newTimeOffRequest.getSelectedDays());
+		String dates = requestService.getDates(newTimeOffRequest.getSelectedDays());
 		System.out.println(dates);
 		return "Added";
 	}
