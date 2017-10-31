@@ -56,31 +56,11 @@ public class TimeOffRequestController {
 	@Autowired
 	private TimeOffDatesRepository datesRepository;
 	private CurrentUser currentUser = CurrentUser.getInstance( );
-	// TimeOffRequest newRequest = new TimeOffRequest();
-
-	// @PostMapping(path = "/new_request")
-	// public @ResponseBody String addNewRequest(@RequestParam String typeOff,
-	// @RequestParam String startDate,
-	// @RequestParam String finishDate, @RequestParam String reason, @RequestParam
-	// String note) {
-	// java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
-	// TimeOffRequest newRequest = new TimeOffRequest();
-	// newRequest.setDateOfSubmit(sqlCurrentDate);
-	// newRequest.setDateStart(requestSerice.getStartDate(startDate));
-	// newRequest.setDateFinish(requestSerice.getFinishDate(finishDate));
-	// newRequest.setDays(requestSerice.getTimeOffDays(startDate, finishDate));
-	// newRequest.setType(typeOff);
-	// newRequest.setReason(reason);
-	// newRequest.setNote(note);
-	// newRequest.setStatus("unapproved");
-	// requestRepository.save(newRequest);
-	// return "Added";
-	// }
 
 	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
 	public @ResponseBody String addNewRequest(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
-		String username = JWTAuthorizationFilter.class.getName();
+//		String username = JWTAuthorizationFilter.class.getName();
 		TimeOffRequest timeOffRequest = new TimeOffRequest();
 		timeOffRequest.setDateOfSubmit(sqlCurrentDate);
 		timeOffRequest.setDateStart(requestService.startDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
@@ -104,6 +84,13 @@ public class TimeOffRequestController {
 		return "Added";
 	}
 
+	@RequestMapping(value = "/test", method = RequestMethod.POST)
+	public @ResponseBody String getStringDates(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
+		String dates = requestService.getDates2(newTimeOffRequest.getSelectedDays());
+		System.out.println(dates);
+		return "Added";
+	}
+	
 	@GetMapping(value = "/request-list")
 	public @ResponseBody Iterable<TimeOffRequestResponse> getAllRequest() {
 		List<TimeOffRequest> requestEntitiesList = requestRepository.findAll();

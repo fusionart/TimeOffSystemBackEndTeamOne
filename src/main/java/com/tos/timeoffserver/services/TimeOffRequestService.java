@@ -3,6 +3,7 @@ package com.tos.timeoffserver.services;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -15,43 +16,36 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.tos.timeoffserver.domain.repositories.HolidayRepository;
+import com.tos.timeoffserver.domain.repositories.TimeOffDatesRepository;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
+import com.tos.timeoffserver.utilities.DateUtility;
+
+import com.mysql.fabric.xmlrpc.base.Array;
 import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 
 @Service
-//@Configurable
-//@Component
+// @Configurable
+// @Component
 public class TimeOffRequestService {
 	@Autowired
 	private TimeOffRequestRepository requestRepository;
 	@Autowired
 	private HolidayRepository holidayRepository;
+	@Autowired
+	private TimeOffDatesRepository datesRepository;
+
+	DateUtility dateUtility = new DateUtility();
 
 	public void approveRequest(TimeOffRequest request) {
 		request.setStatus("approved");
 		requestRepository.save(request);
 	}
 
-	// public Date getStartDate(Date date) {
-	// // TODO Auto-generated method stub
-	//
-	// // return sql.date!!!
-	// return null;
-	// }
-	//
-	// public Date getFinishDate(Date date) {
-	// // TODO Auto-generated method stub
-	//
-	// return sql.Date(date);
-	// //return null;
-	// }
-
 	public int getTimeOffDays(Date startDate, Date finishDate, int workingDays) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date[] dates = orderDates(startDate, finishDate);
 		Iterable<Holiday> holidayDates = holidayRepository.findAll();
-		// Date tempDate;
 		try {
 			Calendar start = Calendar.getInstance();
 			start.setTime(dates[0]);
@@ -102,6 +96,7 @@ public class TimeOffRequestService {
 		System.out.println("---------------------------------getDates-------------Inteval: " + dateStart + " - "
 				+ dateFinish + "-------------------------------");
 		List<java.util.Date> workdays = getWorkdays(dateStart, dateFinish);
+		// List<java.util.Date> workdays = getWorkdaysDates(timeOffRequest);
 		Calendar start = Calendar.getInstance();
 		start.setTime(dateStart);
 		Calendar end = Calendar.getInstance();
@@ -164,6 +159,91 @@ public class TimeOffRequestService {
 		}
 		System.out.println("Results: " + dates);
 		return dates;
+	}
+
+	public String getDates2(Date[] dates) {
+		Arrays.sort(dates);
+		Date dateStart = dates[0];
+		Date dateFinish = dates[dates.length - 1];
+		System.out.println("---------------------------------getDates-------------Inteval: " + dateStart + " - "
+				+ dateFinish + "-------------------------------");
+		ArrayList<java.util.Date> workdays = new ArrayList<>(Arrays.asList(dates));
+		// List<java.util.Date> workdays = getWorkdaysDates(timeOffRequest);
+		Calendar start = Calendar.getInstance();
+		start.setTime(dateStart);
+		Calendar end = Calendar.getInstance();
+		end.setTime(dateFinish);
+		String datesString = "";
+		// java.util.Date currentDay = dateStart;
+		// java.util.Date nextDay = addDaysToDate(currentDay, 1);
+		// java.util.Date theDayAfterNextDay = addDaysToDate(nextDay, 1);
+		if (getDifferenceDays(dateStart, dateFinish) == 0) {
+			datesString = start.get(Calendar.DAY_OF_MONTH) + " " + getMonthNameFromCalendar(start) + " "
+					+ start.get(Calendar.YEAR);
+			System.out.println(datesString + " ------------------------> RESULT!");
+			return datesString;
+		} else {
+			datesString = "" + start.get(Calendar.DAY_OF_MONTH);
+		}
+		for (int index = 0; index < workdays.size(); index++) {
+			if (index == workdays.size() - 1) {
+				// last date
+				String prefix = isDatesEquals(dateFinish, addDaysToDate(workdays.get(index - 1), 1))
+						&& isSameMonth(workdays.get(index), workdays.get(index - 1)) ? "-" : "";
+				datesString = datesString + prefix + end.get(Calendar.DAY_OF_MONTH) + " "
+						+ getMonthNameFromCalendar(end) + " " + end.get(Calendar.YEAR);
+				System.out.println(datesString + " ------------------------> RESULT!");
+				return datesString;
+			} else if (isDatesEquals(workdays.get(index + 1), addDaysToDate(workdays.get(index), 1))
+					&& isSameMonth(workdays.get(index), workdays.get(index + 1))) {
+				// skip if there are consecutive dates
+				continue;
+			} else {
+				if (isSameMonth(workdays.get(index), workdays.get(index + 1))) {
+					// same month
+					if (isDatesEquals(dateStart, workdays.get(index))) {
+						datesString = datesString + ", " + getDayOfMonth(workdays.get(index + 1));
+						continue;
+					}
+					if (!isDatesEquals(workdays.get(index - 1), addDaysToDate(workdays.get(index), -1))
+							&& !isDatesEquals(workdays.get(index + 1), dateFinish)) {
+						datesString = datesString + ", " + getDayOfMonth(workdays.get(index + 1));
+						continue;
+					}
+					if (getDayOfMonth(workdays.get(index)) == 1 ) {
+						continue;
+					}
+					String prefix = getDayOfMonth(workdays.get(index)) != 1 ? "-" : "";
+					datesString = datesString + prefix + getDayOfMonth(workdays.get(index)) + ", ";
+					if (!isDatesEquals(dateFinish, workdays.get(index + 1))) {
+						// if next date is't last
+						datesString = datesString + getDayOfMonth(workdays.get(index + 1));
+					}
+				} else if (!isSameMonth(workdays.get(index), workdays.get(index + 1))) {
+					// different months
+					if (!isSameYear(workdays.get(index), workdays.get(index + 1))) {
+						// ...and a different year
+						datesString = datesString + "-" + getDayOfMonth(workdays.get(index)) + " "
+								+ getMonthNameFromDate(workdays.get(index)) + " " + getYear(workdays.get(index)) + ", ";
+						if (!isDatesEquals(dateFinish, workdays.get(index + 1))) {
+							datesString = datesString + getDayOfMonth(workdays.get(index + 1));
+						}
+					} else {
+						if (isDatesEquals(dateStart, workdays.get(index))) {
+							datesString = datesString + " " + getMonthNameFromDate(workdays.get(index)) + ", ";
+							continue;
+						}
+						datesString = datesString + "-" + getDayOfMonth(workdays.get(index)) + " "
+								+ getMonthNameFromDate(workdays.get(index)) + ", ";
+						if (!isDatesEquals(dateFinish, workdays.get(index + 1))) {
+							datesString = datesString + getDayOfMonth(workdays.get(index + 1));
+						}
+					}
+				}
+			}
+		}
+		System.out.println("Results: " + datesString);
+		return datesString;
 	}
 
 	private List<java.util.Date> getWorkdays(Date dateStart, Date dateFinish) {
@@ -276,7 +356,6 @@ public class TimeOffRequestService {
 	private String getMonthNameFromDate(java.util.Date date) {
 		return getMonthNameFromCalendar(getCalendarForDate(date));
 	}
-	
 
 	private boolean isHoliday(java.util.Date date) {
 		Iterable<Holiday> holidayDates = holidayRepository.findAll();
@@ -287,22 +366,41 @@ public class TimeOffRequestService {
 		}
 		return false;
 	}
-	
-	private String englishMonthName (String monthNumber) {
+
+	public List<java.util.Date> getWorkdaysDates(TimeOffRequest timeOffRequest) {
+		// TODO Auto-generated method stub
+
+		return null;
+	}
+
+	private String englishMonthName(String monthNumber) {
 		switch (monthNumber) {
-		case "01": return "January";
-		case "02": return "February";
-		case "03": return "March";
-		case "04": return "April";
-		case "05": return "May";
-		case "06": return "June";
-		case "07": return "July";
-		case "08": return "August";
-		case "09": return "September";
-		case "10": return "October";
-		case "11": return "November";
-		case "12": return "December";
-		default: return monthNumber;
+		case "01":
+			return "January";
+		case "02":
+			return "February";
+		case "03":
+			return "March";
+		case "04":
+			return "April";
+		case "05":
+			return "May";
+		case "06":
+			return "June";
+		case "07":
+			return "July";
+		case "08":
+			return "August";
+		case "09":
+			return "September";
+		case "10":
+			return "October";
+		case "11":
+			return "November";
+		case "12":
+			return "December";
+		default:
+			return monthNumber;
 		}
 	}
 }

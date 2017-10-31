@@ -13,7 +13,6 @@ import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.repositories.HolidayRepository;
 
 public class DateUtility {
-
 	
 	public String getDates(Date dateStart, Date dateFinish, Iterable<Holiday> holidayDates) {
 		System.out.println("---------------------------------getDates-------------Inteval: " + dateStart + " - "
@@ -210,4 +209,5 @@ public class DateUtility {
 		default: return monthNumber;
 		}
 	}
+
 }
