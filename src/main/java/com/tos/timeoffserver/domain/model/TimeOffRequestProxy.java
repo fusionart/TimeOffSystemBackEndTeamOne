@@ -37,8 +37,7 @@ public class TimeOffRequestProxy {
 		this.status = timeOffRequestEntity.getStatus();
 		this.reason = timeOffRequestEntity.getReason();
 		this.note = timeOffRequestEntity.getNote();
-		this.allDates = timeOffRequestEntity.getDateStart() + " - " + timeOffRequestEntity.getDateFinish();
-//		this.allDates = timeOffRequestService.getDates(timeOffRequestEntity.getDateStart(), timeOffRequestEntity.getDateStart());
+		this.allDates = timeOffRequestEntity.getDates();
 	}
 
 	public Long getId() {

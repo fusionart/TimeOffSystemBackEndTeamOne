@@ -80,7 +80,6 @@ public class TimeOffRequestController {
 	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
 	public @ResponseBody String addNewRequest(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
-		System.out.println(newTimeOffRequest.getSelectedDays() + "------******************************************--------------------------------------");
 		String username = JWTAuthorizationFilter.class.getName();
 		TimeOffRequest timeOffRequest = new TimeOffRequest();
 		timeOffRequest.setDateOfSubmit(sqlCurrentDate);
@@ -91,10 +90,9 @@ public class TimeOffRequestController {
 		timeOffRequest.setReason(newTimeOffRequest.getReason());
 		timeOffRequest.setNote(newTimeOffRequest.getNote());
 		timeOffRequest.setStatus("unapproved");
-		timeOffRequest.setDates("to do");
+		timeOffRequest.setDates(requestService.getDates(timeOffRequest.getDateStart(), timeOffRequest.getDateFinish()));
 		timeOffRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
 		userSerice.changeUserProAvailable(newTimeOffRequest.getType(), newTimeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
-		System.out.println("-------------------------------------------------------new_request---------------------------save");
 		requestRepository.save(timeOffRequest);
 		Date[] dates = newTimeOffRequest.getSelectedDays();
 		for (Date date: dates) {

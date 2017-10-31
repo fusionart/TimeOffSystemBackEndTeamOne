@@ -24,9 +24,6 @@ public class TimeOffRequestResponse {
 	private String note;
 	private String personalId;
 	private String allDates;
-	private String dates;
-
-
 
 	public void entityToResponse(TimeOffRequest timeOffRequestEntity, TimeOffRequestService requestService) {
 		this.id = timeOffRequestEntity.getId();
@@ -39,7 +36,7 @@ public class TimeOffRequestResponse {
 		this.reason = timeOffRequestEntity.getReason();
 		this.note = timeOffRequestEntity.getNote();
 		this.personalId = timeOffRequestEntity.getUser().getPersonalId();
-		this.allDates = requestService.getDates(getDateStart(), getDateFinish());
+		this.allDates = timeOffRequestEntity.getDates();
 	}
 
 	public Long getId() {
