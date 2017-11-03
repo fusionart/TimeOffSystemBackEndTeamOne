@@ -1,6 +1,5 @@
 package com.tos.timeoffserver.domain.entites;
 
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -24,7 +23,7 @@ public class Holiday {
 
 	public Holiday() {
 	}
-	
+
 	public Holiday(Date date) {
 		this.date = date;
 	}
@@ -44,10 +43,9 @@ public class Holiday {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-    @Override
-    public String toString() {
-        return String.format(
-                "Holiday[id=%d, date='%s']",
-                id, date);
-    }
+
+	@Override
+	public String toString() {
+		return String.format("Holiday[id=%d, date='%s']", id, date);
+	}
 }

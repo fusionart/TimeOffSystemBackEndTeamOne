@@ -1,7 +1,5 @@
 package com.tos.timeoffserver.domain.entites;
 
-
-
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +42,7 @@ public class TimeOffRequest {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "request", fetch = FetchType.LAZY)
 	private List<TimeOffDate> timeOffDates;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private ApplicationUser user;
@@ -158,5 +156,5 @@ public class TimeOffRequest {
 	public void setTimeOffDates(List<TimeOffDate> timeOffDates) {
 		this.timeOffDates = timeOffDates;
 	}
-	
+
 }

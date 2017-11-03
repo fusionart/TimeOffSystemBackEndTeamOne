@@ -39,10 +39,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@CrossOrigin
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
 			throws AuthenticationException {
-		System.out.println(" --------------JWTAuthenticationFilter----- 1 --------------------------------");
-		System.out.println(" --------------" + req + " --------------------------------");
 		try {
-			System.out.println(" -------------- iner try --------------------------------");
 			ApplicationUser creds = new ObjectMapper().readValue(req.getInputStream(), ApplicationUser.class);
 			return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),
 					creds.getPassword(), new ArrayList<>()));
@@ -54,7 +51,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@CrossOrigin
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
-		System.out.println(" --------------JWTAuthenticationFilter----- 2 --------------------------------");
 		String token = Jwts.builder().setSubject(((User) auth.getPrincipal()).getUsername())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SignatureAlgorithm.HS512, SECRET.getBytes()).compact();

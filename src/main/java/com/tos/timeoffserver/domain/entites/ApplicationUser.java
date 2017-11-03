@@ -9,10 +9,6 @@ import javax.persistence.Id;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -36,16 +32,6 @@ public class ApplicationUser {
 	private boolean isAdmin;
 	private int ptoAvailable;
 	private int ptoTotal;
-
-	// @ManyToMany(cascade = CascadeType.ALL)
-	// @JoinTable(name = "request_map", joinColumns = {
-	// @JoinColumn(name = "user_id", referencedColumnName = "id") },
-	// inverseJoinColumns = {
-	// @JoinColumn(name = "request_id", referencedColumnName = "id") })
-	// private Set<TimeOffRequest> requests = new HashSet<TimeOffRequest>(0);
-
-	// public ApplicationUser() {
-	// }
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
 	private List<TimeOffRequest> requests;
