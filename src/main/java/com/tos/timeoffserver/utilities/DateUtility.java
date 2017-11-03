@@ -41,7 +41,6 @@ public class DateUtility {
 						datesString = datesString + " " + getMonthNameFromDate(workdays.get(index)) + " "
 								+ getYear(workdays.get(index)) + ", " + getDayOfMonth(workdays.get(index + 1));
 						index++;
-						System.out.println(datesString + " ----> #4");
 						continue;
 					}
 					if (!isSameMonth(workdays.get(index), workdays.get(index + 1))) {
@@ -57,11 +56,9 @@ public class DateUtility {
 					}
 					datesString = datesString + getPrefix(workdays.get(index - 1), workdays.get(index))
 							+ getDayOfMonth(workdays.get(index));
-					System.out.println("prefix: " + datesString);
 				}
 			}
 		}
-		System.out.println("Results: " + datesString);
 		return datesString;
 	}
 
@@ -70,16 +67,13 @@ public class DateUtility {
 		String interval = isSeparateDate(previousDate, currentDate) ? ", " : "-";
 		if (!isSameYear(currentDate, previousDate)) {
 			prefix = prefix + " " + getMonthNameFromDate(previousDate) + " " + getYear(previousDate) + interval;
-			System.out.println(currentDate + " -----1---- " + prefix);
 			return prefix;
 		}
 		if (isSameMonth(previousDate, currentDate)) {
 			prefix = prefix + interval;
-			System.out.println(currentDate + " -----2---- " + prefix);
 			return prefix;
 		} else if (!isSameMonth(previousDate, currentDate)) {
 			prefix = prefix + " " + getMonthNameFromDate(previousDate) + ", ";
-			System.out.println(currentDate + " -----3---- " + prefix);
 		}
 		return prefix;
 	}
