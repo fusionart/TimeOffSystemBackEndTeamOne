@@ -142,18 +142,4 @@ public class UserResponse {
 		this.ptoAvailable = ptoAvailable;
 	}
 
-	// public Map<String, Object> getUserDetails() {
-	// HashMap<String, Object> userDetails = new HashMap<>();
-	// userDetails.put("firstName:", this.firstName);
-	// userDetails.put("secondName:", this.secondName);
-	// userDetails.put("lastName:", this.lastName);
-	// userDetails.put("position:", this.position);
-	// userDetails.put("telephone:", this.telephone);
-	// userDetails.put("userId:", this.userId);
-	// userDetails.put("ptoTotal:", this.ptoTotal);
-	// userDetails.put("address:", this.address);
-	// userDetails.put("email:", this.email);
-	// userDetails.put("isAdmin:", this.isAdmin);
-	// return userDetails;
-	// }
 }

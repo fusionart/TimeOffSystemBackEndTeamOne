@@ -5,14 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tos.timeoffserver.domain.entites.Holiday;
-import com.tos.timeoffserver.domain.entites.TimeOffRequest;
-import com.tos.timeoffserver.domain.repositories.HolidayRepository;
 
 public class DateUtility {
 
@@ -21,12 +14,7 @@ public class DateUtility {
 
 		Date dateStart = dates[0];
 		Date dateFinish = dates[dates.length - 1];
-		System.out.println("---------------------------------getDates-------------Inteval: " + dateStart + " - "
-				+ dateFinish + "-------------------------------");
 		ArrayList<java.util.Date> workdays = new ArrayList<>(Arrays.asList(dates));
-		 for (int index = 0; index < workdays.size(); index++) {
-		 System.out.println(index + ": " + workdays.get(index));
-		 }
 		Calendar start = Calendar.getInstance();
 		start.setTime(dateStart);
 		Calendar end = Calendar.getInstance();
@@ -35,23 +23,16 @@ public class DateUtility {
 		if (getDifferenceDays(dateStart, dateFinish) == 0) {
 			datesString = start.get(Calendar.DAY_OF_MONTH) + " " + getMonthNameFromCalendar(start) + " "
 					+ start.get(Calendar.YEAR);
-			System.out.println(datesString + " ----> #1");
-			System.out.println(datesString + " ------------------------> RESULT!");
 			return datesString;
 		} else {
 			datesString = "" + start.get(Calendar.DAY_OF_MONTH);
-			System.out.println(datesString + " ----> #0");
 		}
 		for (int index = 0; index < workdays.size(); index++) {
-			System.out.println(index + ": " + workdays.get(index) + "String ******************* " + datesString);
 			if (index == workdays.size() - 1) {
 				// last date
-				String prefix = isDatesEquals(dateFinish, addDaysToDate(workdays.get(index - 1), 1))
-						&& isSameMonth(workdays.get(index), workdays.get(index - 1)) ? "-" : ", ";
 				datesString = datesString + getPrefix(workdays.get(index - 1), workdays.get(index))
 						+ end.get(Calendar.DAY_OF_MONTH) + " " + getMonthNameFromCalendar(end) + " "
 						+ end.get(Calendar.YEAR);
-				System.out.println(datesString + " ----------> #2");
 				return datesString;
 			} else {
 				if (isDatesEquals(dateStart, workdays.get(index))) {
@@ -64,20 +45,8 @@ public class DateUtility {
 						continue;
 					}
 					if (!isSameMonth(workdays.get(index), workdays.get(index + 1))) {
-						// datesString = datesString + " " + getMonthNameFromDate(workdays.get(index));
-						System.out.println(datesString + " ----> #3.0");
 						continue;
 					}
-					// if (isDatesEquals(workdays.get(index + 1), addDaysToDate(workdays.get(index),
-					// 1))) {
-					// continue;
-					// }
-					// String prefix = isDatesEquals(workdays.get(index + 1),
-					// addDaysToDate(workdays.get(index), 1))
-					// ? "-"
-					// : "";
-					// datesString = datesString + "";
-					// System.out.println(datesString + " ----> #3");
 					continue;
 				} else {
 					if (isDatesEquals(workdays.get(index - 1), addDaysToDate(workdays.get(index), -1))
@@ -113,15 +82,6 @@ public class DateUtility {
 			System.out.println(currentDate + " -----3---- " + prefix);
 		}
 		return prefix;
-	}
-
-	private boolean isLastDateForMonth(java.util.Date currentDate, java.util.Date nextDate) {
-		return !isSameMonth(currentDate, nextDate);
-	}
-
-	private boolean isSeparateDate(java.util.Date previousDate, java.util.Date currentDate, java.util.Date nextDate) {
-		return !isDatesEquals(previousDate, addDaysToDate(currentDate, -1))
-				&& !isDatesEquals(nextDate, addDaysToDate(currentDate, 1));
 	}
 
 	private boolean isSeparateDate(java.util.Date previousDate, java.util.Date currentDate) {
@@ -169,36 +129,10 @@ public class DateUtility {
 		return isSameYear;
 	}
 
-	private boolean isSaturday(java.util.Date nextDay) {
-		Calendar calendarNextDay = Calendar.getInstance();
-		calendarNextDay.setTime(nextDay);
-		int day = calendarNextDay.get(Calendar.DAY_OF_WEEK);
-		if (day > 7) {
-			day = day - 7;
-		}
-		return day == Calendar.SATURDAY;
-	}
-
-	private boolean isSunday(java.util.Date nextDay) {
-		Calendar calendarNextDay = Calendar.getInstance();
-		calendarNextDay.setTime(nextDay);
-		int day = calendarNextDay.get(Calendar.DAY_OF_WEEK);
-		if (day > 7) {
-			day = day - 7;
-		}
-		return day == Calendar.SUNDAY;
-	}
-
 	private String getYear(java.util.Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return "" + calendar.get(Calendar.YEAR);
-	}
-
-	private int getMonthNumber(java.util.Date date) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		return calendar.get(Calendar.MONTH);
 	}
 
 	private Calendar getCalendarForDate(java.util.Date date) {
@@ -220,12 +154,6 @@ public class DateUtility {
 
 	private String getMonthNameFromDate(java.util.Date date) {
 		return getMonthNameFromCalendar(getCalendarForDate(date));
-	}
-
-	public List<java.util.Date> getWorkdaysDates(TimeOffRequest timeOffRequest) {
-		// TODO Auto-generated method stub
-
-		return null;
 	}
 
 	private String englishMonthName(String monthNumber) {
@@ -258,6 +186,7 @@ public class DateUtility {
 			return monthNumber;
 		}
 	}
+
 	public Date getStartDate(Date startDate, Date finishDate) {
 		Date[] dates = orderDates(startDate, finishDate);
 		return dates[0];

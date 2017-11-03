@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 
-public interface TimeOffRequestRepository extends CrudRepository<TimeOffRequest, Long>{
+public interface TimeOffRequestRepository extends CrudRepository<TimeOffRequest, Long> {
 	List<TimeOffRequest> findAll();
 }

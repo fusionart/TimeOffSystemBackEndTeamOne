@@ -1,11 +1,8 @@
 package com.tos.timeoffserver.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +25,6 @@ import com.tos.timeoffserver.domain.model.UserResponse;
 @RestController
 @RequestMapping(path = "/api")
 @CrossOrigin(origins = "http://localhost:4200")
-// @Api(tags = {"Authentication"})
 public class UserController {
 	@Autowired
 	private UserRepository userRepo;
@@ -44,15 +40,16 @@ public class UserController {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userRepo.save(user);
 	}
-	
+
 	@CrossOrigin(origins = "http://localhost:4200")
 	@PostMapping("/user-info")
-		UserDetailsResponse getUserInfo(@RequestBody UserRequest userInfoRequest) {
+	UserDetailsResponse getUserInfo(@RequestBody UserRequest userInfoRequest) {
 		ApplicationUser requestedUser = userRepo.findByUsername(userInfoRequest.getUsername());
 		UserDetailsResponse userInfo = new UserDetailsResponse();
 		userInfo.modelToResponse(requestedUser);
-		    return userInfo;
+		return userInfo;
 	}
+
 	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("/add")
 	public @ResponseBody ApplicationUser addNewUser(@RequestParam String firstName, @RequestParam String secondName,
@@ -96,25 +93,17 @@ public class UserController {
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public @ResponseBody ApplicationUser loginUser(@RequestBody LoginData loginData) {
-		System.out.println(" -------------------- loginUser ----------------------");
 		ArrayList<ApplicationUser> users = (ArrayList<ApplicationUser>) userRepo.findAll();
 		boolean isUserExist = false;
 		long userId;
-		System.out.println(loginData.getUsername());
-
 		for (ApplicationUser user : users) {
-			System.out.println("Check for: " + user.getUsername() + " - " + user.getPassword());
 			if (user.getUsername().equals(loginData.getUsername())
 					&& user.getPassword().equals(loginData.getPassword())) {
 				isUserExist = true;
 				userId = user.getId();
-				System.out.println("Found user!");
-				System.out.println(user.getEmail() + ", " + user.getFirstName() + ", " + user.getIsAdmin() + ", "
-						+ user.getUsername() + ", " + user.getPassword());
 				return user;
 			}
 		}
-		System.out.println("User not found!!!");
 		return null;
 	}
 

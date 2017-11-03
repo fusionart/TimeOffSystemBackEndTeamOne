@@ -22,7 +22,7 @@ public class TimeOffDate {
 	@Column(name = "date")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date date;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "request_id")
 	private TimeOffRequest request;
@@ -50,6 +50,5 @@ public class TimeOffDate {
 	public void setRequest(TimeOffRequest request) {
 		this.request = request;
 	}
-	
-	
+
 }
