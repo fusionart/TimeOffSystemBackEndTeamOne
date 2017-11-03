@@ -1,21 +1,9 @@
 package com.tos.timeoffserver.domain.model;
 
 import java.sql.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tos.timeoffserver.domain.entites.ApplicationUser;
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
-import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
-import com.tos.timeoffserver.domain.repositories.UserRepository;
-import com.tos.timeoffserver.services.TimeOffRequestService;
-
-
 
 public class TimeOffRequestProxy {
-	@Autowired
-	private TimeOffRequestService timeOffRequestService;
-	
 	private Long id;
 	private Date dateOfSubmit;
 	private String type;
@@ -26,8 +14,8 @@ public class TimeOffRequestProxy {
 	private String reason;
 	private String note;
 	private String allDates;
-	
-	public void entityToResponse (TimeOffRequest timeOffRequestEntity) {
+
+	public void entityToResponse(TimeOffRequest timeOffRequestEntity) {
 		this.id = timeOffRequestEntity.getId();
 		this.dateOfSubmit = timeOffRequestEntity.getDateOfSubmit();
 		this.type = timeOffRequestEntity.getType();
@@ -119,5 +107,5 @@ public class TimeOffRequestProxy {
 	public void setAllDates(String allDates) {
 		this.allDates = allDates;
 	}
-	
+
 }

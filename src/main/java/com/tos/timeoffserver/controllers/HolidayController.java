@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.repositories.HolidayRepository;
-import com.tos.timeoffserver.services.HolidayService;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
@@ -17,9 +16,7 @@ import com.tos.timeoffserver.services.HolidayService;
 public class HolidayController {
 	@Autowired
 	private HolidayRepository holidayRepository;
-	@Autowired
-	private HolidayService holidayService;
-	
+
 	@GetMapping(value = "/holiday-list")
 	public @ResponseBody Iterable<Holiday> getAllHolidays() {
 		return holidayRepository.findAll();

@@ -9,5 +9,5 @@ import com.tos.timeoffserver.domain.repositories.HolidayRepository;
 public class TimeOffDatesService {
 	@Autowired
 	public HolidayRepository holidayRepository;
-	
+
 }

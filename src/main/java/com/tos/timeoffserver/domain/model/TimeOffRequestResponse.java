@@ -1,18 +1,11 @@
 package com.tos.timeoffserver.domain.model;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.tos.timeoffserver.domain.entites.Holiday;
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
 import com.tos.timeoffserver.services.TimeOffRequestService;
 
 public class TimeOffRequestResponse {
-	
+
 	private Long id;
 	private Date dateOfSubmit;
 	private String type;
