@@ -38,6 +38,7 @@ import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.security.JWTAuthorizationFilter;
 import com.tos.timeoffserver.services.TimeOffRequestService;
 import com.tos.timeoffserver.services.UserService;
+import com.tos.timeoffserver.utilities.DateUtility;
 import com.tos.timeoffserver.domain.entites.ApplicationUser;
 import com.tos.timeoffserver.domain.entites.TimeOffDate;
 
@@ -60,17 +61,18 @@ public class TimeOffRequestController {
 	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
 	public @ResponseBody String addNewRequest(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
+		DateUtility dateUtility = new DateUtility();
 //		String username = JWTAuthorizationFilter.class.getName();
 		TimeOffRequest timeOffRequest = new TimeOffRequest();
 		timeOffRequest.setDateOfSubmit(sqlCurrentDate);
-		timeOffRequest.setDateStart(requestService.startDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
-		timeOffRequest.setDateFinish(requestService.finishDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDateStart(dateUtility.getStartDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDateFinish(dateUtility.getFinishDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
 		timeOffRequest.setDays(newTimeOffRequest.getDays());
 		timeOffRequest.setType(newTimeOffRequest.getType());
 		timeOffRequest.setReason(newTimeOffRequest.getReason());
 		timeOffRequest.setNote(newTimeOffRequest.getNote());
 		timeOffRequest.setStatus("unapproved");
-		timeOffRequest.setDates(requestService.getDates(newTimeOffRequest.getSelectedDays()));
+		timeOffRequest.setDates(dateUtility.getDates(newTimeOffRequest.getSelectedDays()));
 		timeOffRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
 		userSerice.changeUserProAvailable(newTimeOffRequest.getType(), newTimeOffRequest.getDays(), userRepository.findByUsername(currentUser.getUsername()));
 		requestRepository.save(timeOffRequest);
@@ -86,7 +88,8 @@ public class TimeOffRequestController {
 
 	@RequestMapping(value = "/test", method = RequestMethod.POST)
 	public @ResponseBody String getStringDates(@RequestBody NewTimeOffRequestBody newTimeOffRequest, HttpServletRequest req) {
-		String dates = requestService.getDates(newTimeOffRequest.getSelectedDays());
+		DateUtility dateUtility = new DateUtility();
+		String dates = dateUtility.getDates(newTimeOffRequest.getSelectedDays());
 		System.out.println(dates);
 		return "Added";
 	}
