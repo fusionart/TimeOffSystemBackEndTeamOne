@@ -159,7 +159,7 @@ public class TimeOffRequestService {
 							+ getDayOfMonth(workdays.get(index));
 					System.out.println("prefix: " + datesString);
 				}
-				// if (isSåparateDate(workdays.get(index - 1), workdays.get(index),
+				// if (isSeparateDate(workdays.get(index - 1), workdays.get(index),
 				// workdays.get(index + 1))) {
 				// // a lonely date
 				// System.out.println("lonely date");
@@ -349,7 +349,7 @@ public class TimeOffRequestService {
 
 	private String getPrefix(java.util.Date previousDate, java.util.Date currentDate) {
 		String prefix = "";
-		String interval = isSåparateDate(previousDate, currentDate) ? ", " : "-";
+		String interval = isSeparateDate(previousDate, currentDate) ? ", " : "-";
 		if (!isSameYear(currentDate, previousDate)) {
 			prefix = prefix + " " + getMonthNameFromDate(currentDate) + " " + getYear(previousDate) + interval;
 			System.out.println(currentDate + " -----1---- " + prefix);
@@ -370,12 +370,12 @@ public class TimeOffRequestService {
 		return !isSameMonth(currentDate, nextDate);
 	}
 
-	private boolean isSåparateDate(java.util.Date previousDate, java.util.Date currentDate, java.util.Date nextDate) {
+	private boolean isSeparateDate(java.util.Date previousDate, java.util.Date currentDate, java.util.Date nextDate) {
 		return !isDatesEquals(previousDate, addDaysToDate(currentDate, -1))
 				&& !isDatesEquals(nextDate, addDaysToDate(currentDate, 1));
 	}
 
-	private boolean isSåparateDate(java.util.Date previousDate, java.util.Date currentDate) {
+	private boolean isSeparateDate(java.util.Date previousDate, java.util.Date currentDate) {
 		return !isDatesEquals(previousDate, addDaysToDate(currentDate, -1));
 	}
 
