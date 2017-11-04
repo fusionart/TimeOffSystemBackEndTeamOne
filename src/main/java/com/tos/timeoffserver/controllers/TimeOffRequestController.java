@@ -114,6 +114,22 @@ public class TimeOffRequestController {
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
 
+	@RequestMapping(value = "/cancel-request", method = RequestMethod.POST)
+	public ResponseEntity<String> cancelRequest(@RequestBody ChangeRequestStatusPost changeStatusPost) {
+		TimeOffRequest request = requestRepository.findOne(changeStatusPost.getRequestId());
+		ApplicationUser currentUser = userRepository.findOne(changeStatusPost.getUserId());
+		if (!userSerice.isUserAdmin(currentUser)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		if (request == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		userSerice.returnDaysToUserProAvailable(changeStatusPost.getRequestType(), changeStatusPost.getRequestDays(),
+				userRepository.findOne(changeStatusPost.getRequestUserId()));
+		requestService.cancelRequest(request);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<TimeOffRequest> deleteTimeOffRequestById(@PathVariable(value = "id") Long id) {
 		TimeOffRequest request = requestRepository.findOne(id);
@@ -127,6 +143,9 @@ public class TimeOffRequestController {
 	static class ChangeRequestStatusPost {
 		Long userId;
 		Long requestId;
+		Long requestUserId;
+		int requestDays;
+		String requestType;
 
 		public Long getUserId() {
 			return userId;
@@ -134,6 +153,18 @@ public class TimeOffRequestController {
 
 		public Long getRequestId() {
 			return requestId;
+		}
+
+		public Long getRequestUserId() {
+			return requestUserId;
+		}
+
+		public int getRequestDays() {
+			return requestDays;
+		}
+
+		public String getRequestType() {
+			return requestType;
 		}
 	}
 }

@@ -16,6 +16,7 @@ public class TimeOffRequestResponse {
 	private String reason;
 	private String note;
 	private String personalId;
+	private Long userId;
 	private String allDates;
 
 	public void entityToResponse(TimeOffRequest timeOffRequestEntity, TimeOffRequestService requestService) {
@@ -29,6 +30,7 @@ public class TimeOffRequestResponse {
 		this.reason = timeOffRequestEntity.getReason();
 		this.note = timeOffRequestEntity.getNote();
 		this.personalId = timeOffRequestEntity.getUser().getPersonalId();
+		this.userId = timeOffRequestEntity.getUser().getId();
 		this.allDates = timeOffRequestEntity.getDates();
 	}
 
@@ -119,5 +121,15 @@ public class TimeOffRequestResponse {
 	public void setAllDates(String allDates) {
 		this.allDates = allDates;
 	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	
+	
 
 }

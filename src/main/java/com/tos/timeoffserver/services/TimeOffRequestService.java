@@ -20,6 +20,11 @@ public class TimeOffRequestService {
 		request.setStatus("approved");
 		requestRepository.save(request);
 	}
+	
+	public void cancelRequest(TimeOffRequest request) {
+		request.setStatus("canceled");
+		requestRepository.save(request);
+	}
 
 	public Date startDate(Date startDate, Date finishDate) {
 		Date[] dates = orderDates(startDate, finishDate);
