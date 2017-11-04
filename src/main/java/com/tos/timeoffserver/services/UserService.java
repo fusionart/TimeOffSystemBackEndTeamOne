@@ -52,6 +52,17 @@ public class UserService {
 			userRepository.save(userToUpdate);
 		}
 	}
+	
+	public void returnDaysToUserProAvailable(String type, int days, ApplicationUser currentUser) {
+		System.out.println("returnDaysToUserProAvailable");
+		if (type.equals("PTO")) {
+			ApplicationUser userToUpdate = userRepository.findOne(currentUser.getId());
+			System.out.println("canceled findone: " + currentUser.getId());
+			System.out.println("canceled: type: " + type + "; days: " + days + "; user: " + currentUser.getPtoAvailable());
+			userToUpdate.setPtoAvailable(currentUser.getPtoAvailable() + days);
+			userRepository.save(userToUpdate);
+		}
+	}
 
 	@PostConstruct
 	public void initDb() throws ParseException {
