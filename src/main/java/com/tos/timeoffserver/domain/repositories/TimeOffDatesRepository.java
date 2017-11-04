@@ -6,4 +6,5 @@ import com.tos.timeoffserver.domain.entites.TimeOffDate;
 
 public interface TimeOffDatesRepository extends CrudRepository<TimeOffDate, Long> {
 	List<TimeOffDate> findAll();
+//	List<TimeOffDate> findByRequestId();
 }

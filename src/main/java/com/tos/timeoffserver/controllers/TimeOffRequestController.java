@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
@@ -138,6 +139,21 @@ public class TimeOffRequestController {
 		}
 		requestRepository.delete(request);
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping(value = "/time-off-dates")
+	public @ResponseBody Iterable<Date> getRequestDates(@RequestParam Long requestId) {
+		// DatesResponse dates = new DatesResponse();
+		List<Date> dates = new ArrayList<Date>();
+		List<TimeOffDate> allDates = datesRepository.findAll();
+		for (TimeOffDate date : allDates) {
+			if (date.getRequest().getId() == requestId) {
+				dates.add(date.getDate());
+				System.out.println("date added: " + date.getDate() + "  ----" + date.getRequest().getId()
+						+ "-------$$$$$$$$$$$$$$$$$$$$$$$$$------------");
+			}
+		}
+		return dates;
 	}
 
 	static class ChangeRequestStatusPost {
