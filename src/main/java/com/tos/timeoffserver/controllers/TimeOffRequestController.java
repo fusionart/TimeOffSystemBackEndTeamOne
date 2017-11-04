@@ -1,9 +1,10 @@
 package com.tos.timeoffserver.controllers;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.Entity;
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,21 +14,24 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.validation.BindingResult;
 
 import com.tos.timeoffserver.domain.entites.TimeOffRequest;
+import com.tos.timeoffserver.domain.model.CurrentUser;
+import com.tos.timeoffserver.domain.model.NewTimeOffRequestBody;
+import com.tos.timeoffserver.domain.model.TimeOffRequestResponse;
+import com.tos.timeoffserver.domain.repositories.TimeOffDatesRepository;
 import com.tos.timeoffserver.domain.repositories.TimeOffRequestRepository;
 import com.tos.timeoffserver.domain.repositories.UserRepository;
 import com.tos.timeoffserver.services.TimeOffRequestService;
 import com.tos.timeoffserver.services.UserService;
-import com.tos.timeoffserver.domain.entites.User;
+import com.tos.timeoffserver.utilities.DateUtility;
+import com.tos.timeoffserver.domain.entites.ApplicationUser;
+import com.tos.timeoffserver.domain.entites.TimeOffDate;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:4200")
@@ -38,47 +42,95 @@ public class TimeOffRequestController {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
-	private TimeOffRequestService requestSerice;
+	private TimeOffRequestService requestService;
 	@Autowired
 	private UserService userSerice;
+	@Autowired
+	private TimeOffDatesRepository datesRepository;
+	private CurrentUser currentUser = CurrentUser.getInstance();
 
-	
-	@GetMapping(path = "/new_request")
-	public @ResponseBody String addNewUser(@RequestParam String type, @RequestParam String startDate,
-			@RequestParam String finishDate, @RequestParam String reason, @RequestParam String note) {
+	@RequestMapping(value = "/new_request", method = RequestMethod.POST)
+	public @ResponseBody String addNewRequest(@RequestBody NewTimeOffRequestBody newTimeOffRequest,
+			HttpServletRequest req) {
 		java.sql.Date sqlCurrentDate = new java.sql.Date(new Date().getTime());
-		TimeOffRequest newRequest = new TimeOffRequest();
-		newRequest.setDateOfSubmit(sqlCurrentDate);
-		newRequest.setDateStart(requestSerice.getStartDate(startDate));
-		newRequest.setDateFinish(requestSerice.getFinishDate(finishDate));
-		newRequest.setDays(requestSerice.getTimeOffDays(startDate, finishDate));
-		newRequest.setType(type);
-		newRequest.setReason(reason);
-		newRequest.setNote(note);
-		newRequest.setStatus("unapproved");
-		requestRepository.save(newRequest);
+		DateUtility dateUtility = new DateUtility();
+		TimeOffRequest timeOffRequest = new TimeOffRequest();
+		timeOffRequest.setDateOfSubmit(sqlCurrentDate);
+		timeOffRequest.setDateStart(
+				dateUtility.getStartDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDateFinish(
+				dateUtility.getFinishDate(newTimeOffRequest.getDateStart(), newTimeOffRequest.getDateFinish()));
+		timeOffRequest.setDays(newTimeOffRequest.getDays());
+		timeOffRequest.setType(newTimeOffRequest.getType());
+		timeOffRequest.setReason(newTimeOffRequest.getReason());
+		timeOffRequest.setNote(newTimeOffRequest.getNote());
+		timeOffRequest.setStatus("unapproved");
+		timeOffRequest.setDates(dateUtility.getDates(newTimeOffRequest.getSelectedDays()));
+		timeOffRequest.setUser(userRepository.findByUsername(currentUser.getUsername()));
+		userSerice.changeUserProAvailable(newTimeOffRequest.getType(), newTimeOffRequest.getDays(),
+				userRepository.findByUsername(currentUser.getUsername()));
+		requestRepository.save(timeOffRequest);
+		Date[] dates = newTimeOffRequest.getSelectedDays();
+		for (Date date : dates) {
+			TimeOffDate timeOffDates = new TimeOffDate();
+			timeOffDates.setDate(date);
+			timeOffDates.setRequest(timeOffRequest);
+			datesRepository.save(timeOffDates);
+		}
 		return "Added";
 	}
 
-	@GetMapping(value = "/list")
-	public @ResponseBody Iterable<TimeOffRequest> getAllRequest() {
-		return requestRepository.findAll();
+	@RequestMapping(value = "/test", method = RequestMethod.POST)
+	public @ResponseBody String getStringDates(@RequestBody NewTimeOffRequestBody newTimeOffRequest,
+			HttpServletRequest req) {
+		DateUtility dateUtility = new DateUtility();
+		String dates = dateUtility.getDates(newTimeOffRequest.getSelectedDays());
+		System.out.println(dates);
+		return "Added";
+	}
+
+	@GetMapping(value = "/request-list")
+	public @ResponseBody Iterable<TimeOffRequestResponse> getAllRequest() {
+		List<TimeOffRequest> requestEntitiesList = requestRepository.findAll();
+		List<TimeOffRequestResponse> requestListResponse = new ArrayList<TimeOffRequestResponse>();
+		for (TimeOffRequest requestEntity : requestEntitiesList) {
+			TimeOffRequestResponse request = new TimeOffRequestResponse();
+			request.entityToResponse(requestEntity, requestService);
+			requestListResponse.add(request);
+		}
+		return requestListResponse;
 	}
 
 	@RequestMapping(value = "/approve", method = RequestMethod.POST)
 	public ResponseEntity<String> approveRequest(@RequestBody ChangeRequestStatusPost changeStatusPost) {
 		TimeOffRequest request = requestRepository.findOne(changeStatusPost.getRequestId());
-		User currentUser = userRepository.findOne(changeStatusPost.getUserId());
+		ApplicationUser currentUser = userRepository.findOne(changeStatusPost.getUserId());
 		if (!userSerice.isUserAdmin(currentUser)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 		if (request == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		requestSerice.approveRequest(request);
+		requestService.approveRequest(request);
 		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 	}
-	
+
+	@RequestMapping(value = "/cancel-request", method = RequestMethod.POST)
+	public ResponseEntity<String> cancelRequest(@RequestBody ChangeRequestStatusPost changeStatusPost) {
+		TimeOffRequest request = requestRepository.findOne(changeStatusPost.getRequestId());
+		ApplicationUser currentUser = userRepository.findOne(changeStatusPost.getUserId());
+		if (!userSerice.isUserAdmin(currentUser)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		if (request == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		userSerice.returnDaysToUserProAvailable(changeStatusPost.getRequestType(), changeStatusPost.getRequestDays(),
+				userRepository.findOne(changeStatusPost.getRequestUserId()));
+		requestService.cancelRequest(request);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
+
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<TimeOffRequest> deleteTimeOffRequestById(@PathVariable(value = "id") Long id) {
 		TimeOffRequest request = requestRepository.findOne(id);
@@ -89,10 +141,27 @@ public class TimeOffRequestController {
 		return ResponseEntity.ok().build();
 	}
 
+	@GetMapping(value = "/time-off-dates")
+	public @ResponseBody Iterable<Date> getRequestDates(@RequestParam Long requestId) {
+		// DatesResponse dates = new DatesResponse();
+		List<Date> dates = new ArrayList<Date>();
+		List<TimeOffDate> allDates = datesRepository.findAll();
+		for (TimeOffDate date : allDates) {
+			if (date.getRequest().getId() == requestId) {
+				dates.add(date.getDate());
+				System.out.println("date added: " + date.getDate() + "  ----" + date.getRequest().getId()
+						+ "-------$$$$$$$$$$$$$$$$$$$$$$$$$------------");
+			}
+		}
+		return dates;
+	}
 
 	static class ChangeRequestStatusPost {
 		Long userId;
 		Long requestId;
+		Long requestUserId;
+		int requestDays;
+		String requestType;
 
 		public Long getUserId() {
 			return userId;
@@ -101,6 +170,17 @@ public class TimeOffRequestController {
 		public Long getRequestId() {
 			return requestId;
 		}
-	}
 
+		public Long getRequestUserId() {
+			return requestUserId;
+		}
+
+		public int getRequestDays() {
+			return requestDays;
+		}
+
+		public String getRequestType() {
+			return requestType;
+		}
+	}
 }

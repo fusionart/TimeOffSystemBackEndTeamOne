@@ -1,16 +1,25 @@
 package com.tos.timeoffserver.domain.entites;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
-public class User {
+@Table(name = "user")
+public class ApplicationUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String username;
+	private String password;
 	private String personalId;
 	private String firstName;
 	private String secondName;
@@ -19,9 +28,13 @@ public class User {
 	private String address;
 	private String telephone;
 	private String position;
-	private Boolean isAdmin;
-	private int PtoAvailable;
-	private int PtoTotal;
+	@Column(nullable = false, columnDefinition = "TINYINT(1)")
+	private boolean isAdmin;
+	private int ptoAvailable;
+	private int ptoTotal;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+	private List<TimeOffRequest> requests;
 
 	public String getAddress() {
 		return address;
@@ -54,27 +67,35 @@ public class User {
 	public String getPosition() {
 		return position;
 	}
+
 	public int getPtoAvailable() {
-		return PtoAvailable;
+		return ptoAvailable;
 	}
+
 	public int getPtoTotal() {
-		return PtoTotal;
+		return ptoTotal;
 	}
+
 	public String getSecondName() {
 		return secondName;
 	}
+
 	public String getTelephone() {
 		return telephone;
 	}
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
@@ -100,11 +121,11 @@ public class User {
 	}
 
 	public void setPtoAvailable(int ptoAvailable) {
-		PtoAvailable = ptoAvailable;
+		this.ptoAvailable = ptoAvailable;
 	}
 
 	public void setPtoTotal(int ptoTotal) {
-		PtoTotal = ptoTotal;
+		this.ptoTotal = ptoTotal;
 	}
 
 	public void setSecondName(String secondName) {
@@ -117,6 +138,26 @@ public class User {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public List<TimeOffRequest> getRequests() {
+		return requests;
+	}
+
+	public void setRequests(List<TimeOffRequest> requests) {
+		this.requests = requests;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 
 }
